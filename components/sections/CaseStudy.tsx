@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import type { Project, Block, CaseStudySection, CaseStudyData } from "@/lib/types";
 import { projects } from "@/lib/data/projects";
+import JumpToNav, { toSectionId } from "@/components/ui/JumpToNav";
 
 interface Props {
   project: Project;
@@ -286,6 +287,7 @@ function renderBlock(block: Block, i: number): React.ReactNode {
 function Section({ section, index }: { section: CaseStudySection; index: number }) {
   return (
     <motion.section
+      id={toSectionId(section.label)}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
@@ -387,6 +389,9 @@ export default function CaseStudy({ project, content }: Props) {
           </motion.div>
         </div>
       </div>
+
+      {/* Jump-to navigation — only for pages with rich content */}
+      {content && <JumpToNav />}
 
       {/* Case study body */}
       {content ? (

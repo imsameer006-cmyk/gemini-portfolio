@@ -45,7 +45,7 @@ export const geminiDigitalTwin: CaseStudyData = {
     },
 
     {
-      label: "The Challenge",
+      label: "Challenge",
       heading: "A System That Looked Complete — But Wasn't Usable",
       blocks: [
         {
