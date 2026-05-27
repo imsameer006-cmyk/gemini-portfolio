@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(mkdir \"C:\\\\Users\\\\Sameer Gautam\\\\Desktop\\\\claude-projects\\\\gemini-portfolio\\\\app\\\\work\" && mkdir \"C:\\\\Users\\\\Sameer Gautam\\\\Desktop\\\\claude-projects\\\\gemini-portfolio\\\\app\\\\work\\\\[slug]\" 2>&1)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(Start-Sleep -Seconds 4)",
+      "Bash(Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 5)",
+      "Bash(Select-Object -ExpandProperty StatusCode)",
+      "Bash(mkdir \"C:\\\\Users\\\\Sameer Gautam\\\\Desktop\\\\claude-projects\\\\gemini-portfolio\\\\.claude\" 2>&1)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(taskkill /PID 17880 /F)",
+      "PowerShell(Stop-Process -Id 17880 -Force -ErrorAction SilentlyContinue; Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Write-Host \"Done\")",
+      "Bash(gh --version)",
+      "Bash(git --version)",
+      "Bash(git config *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

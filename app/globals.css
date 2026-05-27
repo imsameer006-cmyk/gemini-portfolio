@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+@theme {
+  /* Colors — Light palette */
+  --color-warm-bg:        #F9F8F5;
+  --color-surface:        #FFFFFF;
+  --color-surface-tinted: #F2F0EB;
+  --color-border:         #E6E3DD;
+  --color-border-strong:  #CECAC2;
+
+  --color-text:           #18171A;
+  --color-text-secondary: #6A6764;
+  --color-text-muted:     #9C9A95;
+
+  --color-accent:         #C07B50;
+  --color-accent-light:   #F5E8DC;
+  --color-accent-hover:   #A8643C;
+
+  /* Colors — Dark sections */
+  --color-dark:           #141310;
+  --color-dark-surface:   #1C1B17;
+  --color-dark-border:    #2E2C27;
+  --color-dark-text:      #EDEBE3;
+  --color-dark-secondary: #9A9890;
+  --color-dark-muted:     #6A6860;
+
+  /* Typography */
+  --font-sans:    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  --font-mono:    var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Easing */
+  --ease-out-expo:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Base Reset ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-warm-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Typography Helpers ─────────────────────────────────────── */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Instrument Serif italic is where the magic lives */
+.display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+/* ── Focus Styles ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Selection ──────────────────────────────────────────────── */
+::selection {
+  background-color: var(--color-accent-light);
+  color: var(--color-text);
+}
+
+/* ── Reduced Motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ── Scrollbar Styling ──────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-warm-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
