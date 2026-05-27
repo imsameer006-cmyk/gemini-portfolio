@@ -7,7 +7,7 @@ export interface Project {
   impact: string;
   tags: string[];
   featured: boolean;
-  coverColor: string; // bg color for card visual
+  coverColor: string;
 }
 
 export interface ProcessStep {
@@ -19,4 +19,50 @@ export interface ProcessStep {
 export interface Belief {
   heading: string;
   body: string;
+}
+
+// ── Case Study Content Blocks ──────────────────────────────────
+
+export type Block =
+  | { type: "paragraph"; text: string }
+  | { type: "subheading"; text: string }
+  | { type: "callout"; text: string }
+  | { type: "bullet-list"; items: string[] }
+  | { type: "meta-grid"; fields: { label: string; value: string }[] }
+  | {
+      type: "two-col-list";
+      left: { heading: string; items: string[]; variant?: "positive" | "warning" | "neutral" };
+      right: { heading: string; items: string[]; variant?: "positive" | "warning" | "neutral" };
+    }
+  | { type: "role-list"; items: { abbr: string; description: string }[] }
+  | {
+      type: "exploration-cards";
+      items: {
+        heading: string;
+        description: string;
+        strength: string;
+        limitation: string;
+      }[];
+    }
+  | { type: "stages"; items: string[] }
+  | {
+      type: "decisions";
+      items: { heading: string; body: string; bullets?: string[] }[];
+    }
+  | {
+      type: "before-after";
+      before: { heading: string; items: string[] };
+      after: { heading: string; items: string[] };
+    }
+  | { type: "image-placeholder"; caption: string; tall?: boolean };
+
+export interface CaseStudySection {
+  label: string;
+  heading?: string;
+  blocks: Block[];
+}
+
+export interface CaseStudyData {
+  projectSlug: string;
+  sections: CaseStudySection[];
 }

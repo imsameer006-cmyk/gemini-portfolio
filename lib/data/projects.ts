@@ -2,16 +2,16 @@ import type { Project, ProcessStep, Belief } from "@/lib/types";
 
 export const projects: Project[] = [
   {
-    slug: "onboarding-redesign",
-    title: "Redefining Onboarding for 2M+ Users",
-    category: "Product Design",
+    slug: "gemini-digital-twin",
+    title: "Gemini — Digital Twin",
+    category: "Workflow Design",
     year: "2024",
     description:
-      "Reduced time-to-value from 8 minutes to under 90 seconds by rebuilding the activation flow from first principles.",
-    impact: "↑ 34% activation rate",
-    tags: ["User Research", "Interaction Design", "A/B Testing"],
+      "Designed a multi-role approval workflow that eliminated status uncertainty across 4 engineering roles on a B2B digital twin platform.",
+    impact: "Launched to 20 FAEs in China",
+    tags: ["Workflow Design", "B2B", "UX Research", "Systems Design"],
     featured: true,
-    coverColor: "#EDE8E0",
+    coverColor: "#E0EDE8",
   },
   {
     slug: "design-system",

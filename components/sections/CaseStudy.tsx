@@ -2,20 +2,339 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import type { Project } from "@/lib/types";
+import type { Project, Block, CaseStudySection, CaseStudyData } from "@/lib/types";
 import { projects } from "@/lib/data/projects";
 
 interface Props {
   project: Project;
+  content?: CaseStudyData;
 }
 
-const FADE_UP = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.55, delay, ease: [0.16, 1, 0.3, 1] as const },
-});
+// ── Block Renderers ────────────────────────────────────────────
 
-export default function CaseStudy({ project }: Props) {
+function Paragraph({ text }: { text: string }) {
+  return (
+    <p className="text-base text-[#3A3836] leading-relaxed">{text}</p>
+  );
+}
+
+function Subheading({ text }: { text: string }) {
+  return (
+    <h3 className="text-sm font-medium text-[#18171A] tracking-wide mt-2">{text}</h3>
+  );
+}
+
+function Callout({ text }: { text: string }) {
+  return (
+    <div className="border-l-[3px] border-[#C07B50] bg-[#F9F4EF] px-6 py-5 rounded-r-xl">
+      <p className="text-[#18171A] text-base leading-relaxed">{text}</p>
+    </div>
+  );
+}
+
+function BulletList({ items }: { items: string[] }) {
+  return (
+    <ul className="space-y-2">
+      {items.map((item, i) => (
+        <li key={i} className="flex gap-3 text-base text-[#3A3836] leading-relaxed">
+          <span className="mt-2 w-1 h-1 rounded-full bg-[#C07B50] shrink-0" />
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border border-[#E6E3DD] rounded-2xl overflow-hidden bg-white">
+      {fields.map(({ label, value }, i) => (
+        <div
+          key={label}
+          className={[
+            "px-4 py-4 flex flex-col gap-1",
+            i < fields.length - 1 ? "border-r border-[#E6E3DD]" : "",
+          ].join(" ")}
+        >
+          <span className="text-[10px] text-[#9C9A95] tracking-widest uppercase font-medium">{label}</span>
+          <span className="text-sm font-medium text-[#18171A] leading-snug">{value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TwoColList({
+  left,
+  right,
+}: {
+  left: { heading: string; items: string[]; variant?: string };
+  right: { heading: string; items: string[]; variant?: string };
+}) {
+  const variantStyles: Record<string, string> = {
+    positive: "bg-[#F0F6F2] border border-[#BCDBC7]",
+    warning: "bg-[#FEF3EE] border border-[#F2C4A8]",
+    neutral: "bg-[#F2F0EB] border border-[#E6E3DD]",
+  };
+  const iconMap: Record<string, string> = {
+    positive: "✓",
+    warning: "△",
+    neutral: "·",
+  };
+  const textMap: Record<string, string> = {
+    positive: "text-[#2E7D52]",
+    warning: "text-[#C07B50]",
+    neutral: "text-[#6A6764]",
+  };
+
+  const renderCol = (col: { heading: string; items: string[]; variant?: string }) => {
+    const v = col.variant ?? "neutral";
+    return (
+      <div className={`rounded-xl p-5 flex flex-col gap-3 ${variantStyles[v]}`}>
+        <p className={`text-xs font-semibold tracking-wide uppercase ${textMap[v]}`}>
+          {iconMap[v]} {col.heading}
+        </p>
+        <ul className="space-y-2">
+          {col.items.map((item, i) => (
+            <li key={i} className="text-sm text-[#3A3836] leading-relaxed">
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {renderCol(left)}
+      {renderCol(right)}
+    </div>
+  );
+}
+
+function RoleList({ items }: { items: { abbr: string; description: string }[] }) {
+  return (
+    <div className="space-y-3">
+      {items.map(({ abbr, description }) => (
+        <div key={abbr} className="flex gap-3 items-baseline">
+          <span className="text-sm font-semibold text-[#C07B50] w-10 shrink-0">{abbr}</span>
+          <span className="text-sm text-[#3A3836] leading-relaxed">
+            — {description}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ExplorationCards({
+  items,
+}: {
+  items: { heading: string; description: string; strength: string; limitation: string }[];
+}) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {items.map((card, i) => (
+        <div
+          key={i}
+          className="bg-white border border-[#E6E3DD] rounded-2xl p-5 flex flex-col gap-4"
+        >
+          <h4 className="font-medium text-[#18171A] text-sm leading-snug">{card.heading}</h4>
+          <p className="text-sm text-[#6A6764] leading-relaxed">{card.description}</p>
+          <div className="space-y-2 mt-auto pt-4 border-t border-[#F2F0EB]">
+            <div>
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-[#2E7D52] block mb-0.5">Strength</span>
+              <p className="text-xs text-[#3A3836] leading-relaxed">{card.strength}</p>
+            </div>
+            <div>
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-[#9C9A95] block mb-0.5">Limitation</span>
+              <p className="text-xs text-[#3A3836] leading-relaxed">{card.limitation}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Stages({ items }: { items: string[] }) {
+  return (
+    <div className="overflow-x-auto -mx-2 px-2">
+      <div className="flex items-center gap-1.5 flex-nowrap py-3 min-w-max">
+        {items.map((stage, i) => (
+          <div key={i} className="flex items-center gap-1.5">
+            <span className="text-xs font-medium bg-white border border-[#E6E3DD] text-[#18171A] px-3 py-1.5 rounded-full whitespace-nowrap">
+              {stage}
+            </span>
+            {i < items.length - 1 && (
+              <span className="text-[#C07B50] text-sm">→</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Decisions({
+  items,
+}: {
+  items: { heading: string; body: string; bullets?: string[] }[];
+}) {
+  return (
+    <div className="space-y-10">
+      {items.map((decision, i) => (
+        <div key={i} className="grid grid-cols-[2rem_1fr] gap-4">
+          <span className="font-[family-name:var(--font-instrument-serif)] italic text-2xl text-[#C07B50]/50 leading-none pt-0.5">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <div className="space-y-3">
+            <h4 className="font-medium text-[#18171A] text-base">{decision.heading}</h4>
+            <p className="text-sm text-[#3A3836] leading-relaxed">{decision.body}</p>
+            {decision.bullets && (
+              <ul className="space-y-1.5 mt-2">
+                {decision.bullets.map((b, j) => (
+                  <li key={j} className="flex gap-2.5 text-sm text-[#3A3836] leading-relaxed">
+                    <span className="mt-2 w-1 h-1 rounded-full bg-[#C07B50] shrink-0" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BeforeAfter({
+  before,
+  after,
+}: {
+  before: { heading: string; items: string[] };
+  after: { heading: string; items: string[] };
+}) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="bg-[#FEF3EE] border border-[#F2C4A8] rounded-xl p-5">
+        <p className="text-xs font-semibold text-[#C07B50] tracking-widest uppercase mb-3">
+          {before.heading}
+        </p>
+        <ul className="space-y-2">
+          {before.items.map((item, i) => (
+            <li key={i} className="text-sm text-[#3A3836] leading-relaxed flex gap-2">
+              <span className="text-[#C07B50] mt-0.5">—</span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="bg-[#F0F6F2] border border-[#BCDBC7] rounded-xl p-5">
+        <p className="text-xs font-semibold text-[#2E7D52] tracking-widest uppercase mb-3">
+          {after.heading}
+        </p>
+        <ul className="space-y-2">
+          {after.items.map((item, i) => (
+            <li key={i} className="text-sm text-[#3A3836] leading-relaxed flex gap-2">
+              <span className="text-[#2E7D52] mt-0.5">✓</span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function ImagePlaceholder({ caption, tall }: { caption: string; tall?: boolean }) {
+  return (
+    <figure
+      className={[
+        "w-full bg-[#F2F0EB] border border-[#E6E3DD] rounded-2xl overflow-hidden flex flex-col justify-end",
+        tall ? "min-h-[280px]" : "min-h-[200px]",
+      ].join(" ")}
+    >
+      <div className="p-4 border-t border-[#E6E3DD] bg-white/60 backdrop-blur-sm">
+        <figcaption className="text-xs text-[#9C9A95] leading-snug">{caption}</figcaption>
+      </div>
+    </figure>
+  );
+}
+
+function renderBlock(block: Block, i: number): React.ReactNode {
+  switch (block.type) {
+    case "paragraph":        return <Paragraph key={i} text={block.text} />;
+    case "subheading":       return <Subheading key={i} text={block.text} />;
+    case "callout":          return <Callout key={i} text={block.text} />;
+    case "bullet-list":      return <BulletList key={i} items={block.items} />;
+    case "meta-grid":        return <MetaGrid key={i} fields={block.fields} />;
+    case "two-col-list":     return <TwoColList key={i} left={block.left} right={block.right} />;
+    case "role-list":        return <RoleList key={i} items={block.items} />;
+    case "exploration-cards":return <ExplorationCards key={i} items={block.items} />;
+    case "stages":           return <Stages key={i} items={block.items} />;
+    case "decisions":        return <Decisions key={i} items={block.items} />;
+    case "before-after":     return <BeforeAfter key={i} before={block.before} after={block.after} />;
+    case "image-placeholder":return <ImagePlaceholder key={i} caption={block.caption} tall={block.tall} />;
+    default:                 return null;
+  }
+}
+
+// ── Section Component ──────────────────────────────────────────
+
+function Section({ section, index }: { section: CaseStudySection; index: number }) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="border-t border-[#E6E3DD] pt-12 pb-4"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 md:gap-12">
+        {/* Left: section label */}
+        <div className="md:pt-0.5">
+          <span className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium">
+            {section.label}
+          </span>
+        </div>
+
+        {/* Right: content */}
+        <div className="space-y-6">
+          {section.heading && (
+            <h2 className="font-[family-name:var(--font-instrument-serif)] italic text-[clamp(1.5rem,3vw,2.25rem)] leading-snug text-[#18171A]">
+              {section.heading}
+            </h2>
+          )}
+          {section.blocks.map((block, i) => renderBlock(block, i))}
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
+// ── Generic Fallback Body ──────────────────────────────────────
+
+function GenericBody({ project }: { project: Project }) {
+  return (
+    <div className="max-w-[800px] mx-auto px-6 md:px-10 py-20">
+      <div className="border-t border-[#E6E3DD] pt-12 space-y-6">
+        <p className="text-[#6A6764] text-base leading-relaxed">
+          Full case study coming soon. In the meantime, feel free to{" "}
+          <a href="mailto:imsameer006@gmail.com" className="text-[#C07B50] underline underline-offset-2">
+            reach out
+          </a>{" "}
+          to discuss this project in detail.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────
+
+export default function CaseStudy({ project, content }: Props) {
   const currentIndex = projects.findIndex((p) => p.slug === project.slug);
   const next = projects[(currentIndex + 1) % projects.length];
 
@@ -23,146 +342,72 @@ export default function CaseStudy({ project }: Props) {
     <article>
       {/* Hero */}
       <div
-        className="min-h-[50vh] md:min-h-[60vh] flex flex-col justify-end px-6 md:px-10 pt-32 pb-16"
+        className="min-h-[52vh] md:min-h-[60vh] flex flex-col justify-end px-6 md:px-10 pt-32 pb-12"
         style={{ backgroundColor: project.coverColor }}
       >
         <div className="max-w-[1280px] mx-auto w-full">
-          <motion.p {...FADE_UP(0)} className="text-xs text-[#18171A]/50 tracking-widest uppercase font-medium mb-4">
-            {project.category} · {project.year}
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="text-xs text-[#18171A]/50 tracking-widest uppercase font-medium mb-4"
+          >
+            {project.category}
           </motion.p>
           <motion.h1
-            {...FADE_UP(0.1)}
-            className="font-[family-name:var(--font-instrument-serif)] italic text-[clamp(2rem,5vw,4rem)] leading-tight text-[#18171A] max-w-[22ch] mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+            className="font-[family-name:var(--font-instrument-serif)] italic text-[clamp(2rem,5vw,4rem)] leading-tight text-[#18171A] max-w-[22ch] mb-5"
           >
             {project.title}
           </motion.h1>
-          <motion.p {...FADE_UP(0.2)} className="text-base text-[#18171A]/70 max-w-[44ch] leading-relaxed mb-8">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="text-base text-[#18171A]/65 max-w-[48ch] leading-relaxed mb-8"
+          >
             {project.description}
           </motion.p>
-          <motion.span
-            {...FADE_UP(0.3)}
-            className="inline-block text-sm font-medium text-[#18171A] bg-[#18171A]/10 px-3 py-1.5 rounded-full"
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-wrap gap-2"
           >
-            {project.impact}
-          </motion.span>
+            <span className="text-sm font-medium text-[#18171A] bg-[#18171A]/8 px-3 py-1.5 rounded-full">
+              {project.impact}
+            </span>
+            {project.tags.map((tag) => (
+              <span key={tag} className="text-xs text-[#18171A]/50 border border-[#18171A]/15 px-3 py-1.5 rounded-full">
+                {tag}
+              </span>
+            ))}
+          </motion.div>
         </div>
       </div>
 
-      {/* Tags */}
-      <div className="border-b border-[#E6E3DD] px-6 md:px-10 py-5">
-        <div className="max-w-[1280px] mx-auto flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <span key={tag} className="text-xs text-[#6A6764] border border-[#E6E3DD] rounded-full px-3 py-1">
-              {tag}
-            </span>
+      {/* Case study body */}
+      {content ? (
+        <div className="max-w-[900px] mx-auto px-6 md:px-10 py-16 space-y-0">
+          {content.sections.map((section, i) => (
+            <Section key={section.label} section={section} index={i} />
           ))}
         </div>
-      </div>
-
-      {/* Placeholder case study body */}
-      <div className="px-6 md:px-10 py-20 md:py-28">
-        <div className="max-w-[720px] mx-auto">
-          {/* Overview */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-16"
-          >
-            <h2 className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium mb-5">Overview</h2>
-            <p className="text-lg text-[#18171A] leading-relaxed">
-              This case study outlines the full end-to-end process — from discovery and research
-              through to final design and measured outcomes. Each decision was informed by data,
-              user feedback, and a clear understanding of business constraints.
-            </p>
-          </motion.section>
-
-          <div className="border-t border-[#E6E3DD] mb-16" />
-
-          {/* Problem */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-16"
-          >
-            <h2 className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium mb-5">The Problem</h2>
-            <p className="text-[#18171A] leading-relaxed mb-4">
-              Users were encountering significant friction at a critical point in the experience.
-              Drop-off rates signalled a fundamental mismatch between the product&apos;s mental model
-              and what users actually needed.
-            </p>
-            <p className="text-[#6A6764] leading-relaxed">
-              The challenge was not simply to redesign a screen — it was to understand why
-              the existing flow felt broken, and to rebuild it from first principles.
-            </p>
-          </motion.section>
-
-          {/* Visual placeholder */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full h-64 md:h-80 rounded-2xl mb-16 flex items-center justify-center"
-            style={{ backgroundColor: project.coverColor }}
-          >
-            <span className="text-[#18171A]/20 text-sm font-medium tracking-wide">Design artifact placeholder</span>
-          </motion.div>
-
-          {/* Process */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-16"
-          >
-            <h2 className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium mb-5">Process</h2>
-            <div className="space-y-6">
-              {["Research & Discovery", "Synthesis & Framing", "Design & Iteration", "Validation & Refinement"].map((phase) => (
-                <div key={phase} className="flex gap-4">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C07B50] mt-2.5 shrink-0" />
-                  <div>
-                    <p className="font-medium text-[#18171A] mb-1">{phase}</p>
-                    <p className="text-[#6A6764] text-sm leading-relaxed">
-                      Detailed notes on this phase will appear here. Every step was documented,
-                      critiqued, and evolved through collaborative sessions with stakeholders and users.
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.section>
-
-          {/* Outcome */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-[#F2F0EB] rounded-2xl p-8 mb-16"
-          >
-            <h2 className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium mb-5">Outcome</h2>
-            <p className="font-[family-name:var(--font-instrument-serif)] italic text-2xl text-[#18171A] leading-snug mb-4">
-              &ldquo;{project.impact}&rdquo;
-            </p>
-            <p className="text-[#6A6764] text-sm leading-relaxed">
-              Results were measured over a 6-week post-launch window, with statistical significance
-              confirmed before drawing conclusions.
-            </p>
-          </motion.section>
-        </div>
-      </div>
+      ) : (
+        <GenericBody project={project} />
+      )}
 
       {/* Next project */}
-      <div className="border-t border-[#E6E3DD] px-6 md:px-10 py-12">
+      <div className="border-t border-[#E6E3DD] px-6 md:px-10 py-12 bg-[#F9F8F5]">
         <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
-            <p className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium mb-1">Next Project</p>
+            <p className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium mb-1">
+              Next Project
+            </p>
             <p className="text-[#18171A] font-medium">{next.title}</p>
+            <p className="text-sm text-[#6A6764] mt-0.5">{next.category}</p>
           </div>
           <Link
             href={`/work/${next.slug}`}
