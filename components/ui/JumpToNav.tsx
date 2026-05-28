@@ -237,7 +237,7 @@ export default function JumpToNav() {
           ═══════════════════════════════════════════════════════ */}
       <div className="lg:hidden">
         <AnimatePresence>
-          {isVisible && (
+          {isVisible && !isNearBottom && (
             <motion.div
               ref={bottomBarRef}
               initial={{ opacity: 0, y: 8 }}
