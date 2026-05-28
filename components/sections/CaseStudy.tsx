@@ -48,14 +48,11 @@ function BulletList({ items }: { items: string[] }) {
 
 function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border border-[#E6E3DD] rounded-2xl overflow-hidden bg-white">
-      {fields.map(({ label, value }, i) => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 border border-[#E6E3DD] rounded-2xl overflow-hidden bg-[#E6E3DD] gap-px">
+      {fields.map(({ label, value }) => (
         <div
           key={label}
-          className={[
-            "px-4 py-4 flex flex-col gap-1",
-            i < fields.length - 1 ? "border-r border-[#E6E3DD]" : "",
-          ].join(" ")}
+          className="px-5 py-5 bg-white flex flex-col gap-2"
         >
           <span className="text-[10px] text-[#9C9A95] tracking-widest uppercase font-medium">{label}</span>
           <span className="text-sm font-medium text-[#18171A] leading-snug">{value}</span>
