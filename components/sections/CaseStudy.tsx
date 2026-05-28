@@ -217,15 +217,20 @@ function Stages({ items }: { items: string[] }) {
       </div>
 
       {/* ── Mobile/tablet (below lg): vertical stack, ↓ arrows ── */}
+      {/* No items-center on flex parents → default stretch makes every
+          pill span the full container width for uniform sizing.
+          Arrows get their own justify-center wrapper to stay centred.  */}
       <div className="lg:hidden px-4 py-4">
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col gap-2">
           {items.map((stage, i) => (
-            <div key={i} className="flex flex-col items-center gap-2">
-              <span className="text-[11px] font-medium bg-white border border-[#E6E3DD] text-[#18171A] px-3 py-1.5 rounded-full whitespace-nowrap">
+            <div key={i} className="flex flex-col gap-2">
+              <span className="text-[11px] font-medium bg-white border border-[#E6E3DD] text-[#18171A] px-3 py-1.5 rounded-full text-center">
                 {stage}
               </span>
               {i < items.length - 1 && (
-                <span className="text-[#C07B50] text-xs select-none" aria-hidden="true">↓</span>
+                <div className="flex justify-center" aria-hidden="true">
+                  <span className="text-[#C07B50] text-xs select-none">↓</span>
+                </div>
               )}
             </div>
           ))}
