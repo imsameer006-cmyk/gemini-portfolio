@@ -75,6 +75,22 @@ function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
   );
 }
 
+function CheckIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function MinusIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M2.5 6h7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function TwoColList({
   left,
   right,
@@ -83,33 +99,41 @@ function TwoColList({
   right: { heading: string; items: string[]; variant?: string };
 }) {
   const variantStyles: Record<string, string> = {
-    positive: "bg-[#F0F6F2] border border-[#BCDBC7]",
-    warning: "bg-[#FEF3EE] border border-[#F2C4A8]",
+    positive: "bg-[#EEF2EA] border border-[#C5D9BC]",
+    warning: "bg-[#F5E8DC] border border-[#E8C9AF]",
     neutral: "bg-[#F2F0EB] border border-[#E6E3DD]",
   };
-  const iconMap: Record<string, string> = {
-    positive: "✓",
-    warning: "△",
-    neutral: "·",
-  };
   const textMap: Record<string, string> = {
-    positive: "text-[#2E7D52]",
+    positive: "text-[#4A6741]",
     warning: "text-[#C07B50]",
     neutral: "text-[#6A6764]",
+  };
+  const dividerMap: Record<string, string> = {
+    positive: "bg-[#C5D9BC]",
+    warning: "bg-[#E8C9AF]",
+    neutral: "bg-[#E6E3DD]",
   };
 
   const renderCol = (col: { heading: string; items: string[]; variant?: string }) => {
     const v = col.variant ?? "neutral";
+    const Icon = v === "positive" ? CheckIcon : v === "warning" ? MinusIcon : null;
     return (
       <motion.div
-        className={`rounded-xl p-5 flex flex-col gap-3 ${variantStyles[v]}`}
+        className={`rounded-xl p-5 flex flex-col ${variantStyles[v]}`}
         whileHover={{ y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
         transition={{ duration: 0.18, ease: "easeOut" }}
       >
-        <p className={`text-xs font-semibold tracking-wide uppercase ${textMap[v]}`}>
-          {iconMap[v]} {col.heading}
-        </p>
-        <ul className="space-y-2">
+        {/* Header */}
+        <div className={`flex items-center gap-2 ${textMap[v]}`}>
+          {Icon && <Icon />}
+          <p className="text-xs font-semibold tracking-wide uppercase">
+            {col.heading}
+          </p>
+        </div>
+        {/* Divider */}
+        <div className={`h-px ${dividerMap[v]} mt-3 mb-4`} />
+        {/* Items */}
+        <ul className="space-y-3">
           {col.items.map((item, i) => (
             <li key={i} className="text-sm text-[#3A3836] leading-relaxed">
               {item}
