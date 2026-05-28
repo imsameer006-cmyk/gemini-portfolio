@@ -315,6 +315,7 @@ function BeforeAfter({
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        whileHover={{ y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", transition: { duration: 0.18, ease: "easeOut" } }}
       >
         <p className="text-xs font-semibold text-[#C07B50] tracking-widest uppercase mb-3">
           {before.heading}
@@ -334,6 +335,7 @@ function BeforeAfter({
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        whileHover={{ y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", transition: { duration: 0.18, ease: "easeOut" } }}
       >
         <p className="text-xs font-semibold text-[#2E7D52] tracking-widest uppercase mb-3">
           {after.heading}
@@ -391,10 +393,10 @@ function Section({ section, index }: { section: CaseStudySection; index: number 
   return (
     <motion.section
       id={toSectionId(section.label)}
-      initial={{ opacity: 0, y: 36 }}
+      initial={{ opacity: 0, y: 48 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.05 }}
-      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       className="pb-8"
     >
       {/* Animated divider — grows left-to-right on scroll */}
