@@ -98,10 +98,12 @@ function TwoColList({
         : v === "warning"
         ? <MinusCircle size={16} weight="regular" aria-hidden />
         : null;
+    const internalHoverClass =
+      v === "positive" ? "card-glow" : v === "warning" ? "card-vignette" : "";
 
     return (
       <motion.div
-        className="rounded-xl bg-[#F2F0EB] border border-[#E6E3DD] flex flex-col"
+        className={`rounded-xl bg-[#F2F0EB] border border-[#E6E3DD] flex flex-col ${internalHoverClass}`}
         style={{ padding: "28px" }}
         whileHover={{ y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
         transition={{ duration: 0.18, ease: "easeOut" }}
