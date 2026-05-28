@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import Link from "next/link";
 import type { Project, Block, CaseStudySection, CaseStudyData } from "@/lib/types";
 import { projects } from "@/lib/data/projects";
@@ -28,9 +28,15 @@ function Subheading({ text }: { text: string }) {
 
 function Callout({ text }: { text: string }) {
   return (
-    <div className="border-l-[3px] border-[#C07B50] bg-[#F9F4EF] px-6 py-5 rounded-r-xl max-w-[640px]">
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="border-l-[3px] border-[#C07B50] bg-[#F9F4EF] px-6 py-5 rounded-r-xl max-w-[640px]"
+    >
       <p className="text-[#18171A] text-base leading-relaxed">{text}</p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -50,14 +56,18 @@ function BulletList({ items }: { items: string[] }) {
 function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 border border-[#E6E3DD] rounded-2xl overflow-hidden bg-[#E6E3DD] gap-px">
-      {fields.map(({ label, value }) => (
-        <div
+      {fields.map(({ label, value }, i) => (
+        <motion.div
           key={label}
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.4, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
           className="px-5 py-5 bg-white flex flex-col gap-2"
         >
           <span className="text-[10px] text-[#8C8B84] tracking-widest uppercase font-medium">{label}</span>
           <span className="text-sm font-medium text-[#18171A] leading-snug">{value}</span>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -89,7 +99,11 @@ function TwoColList({
   const renderCol = (col: { heading: string; items: string[]; variant?: string }) => {
     const v = col.variant ?? "neutral";
     return (
-      <div className={`rounded-xl p-5 flex flex-col gap-3 ${variantStyles[v]}`}>
+      <motion.div
+        className={`rounded-xl p-5 flex flex-col gap-3 ${variantStyles[v]}`}
+        whileHover={{ y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
+      >
         <p className={`text-xs font-semibold tracking-wide uppercase ${textMap[v]}`}>
           {iconMap[v]} {col.heading}
         </p>
@@ -100,7 +114,7 @@ function TwoColList({
             </li>
           ))}
         </ul>
-      </div>
+      </motion.div>
     );
   };
 
@@ -114,14 +128,19 @@ function TwoColList({
 
 function RoleList({ items }: { items: { abbr: string; description: string }[] }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-1">
       {items.map(({ abbr, description }) => (
-        <div key={abbr} className="flex gap-3 items-baseline">
+        <motion.div
+          key={abbr}
+          className="flex gap-3 items-baseline px-2 py-2 -mx-2 rounded-lg"
+          whileHover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
+          transition={{ duration: 0.15 }}
+        >
           <span className="text-sm font-semibold text-[#C07B50] w-10 shrink-0">{abbr}</span>
           <span className="text-sm text-[#3A3836] leading-relaxed">
             — {description}
           </span>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -135,9 +154,11 @@ function ExplorationCards({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {items.map((card, i) => (
-        <div
+        <motion.div
           key={i}
           className="bg-white border border-[#E6E3DD] rounded-2xl p-5 flex flex-col gap-4"
+          whileHover={{ y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
         >
           <h4 className="font-medium text-[#18171A] text-sm leading-snug">{card.heading}</h4>
           <p className="text-sm text-[#6A6764] leading-relaxed">{card.description}</p>
@@ -151,7 +172,7 @@ function ExplorationCards({
               <p className="text-xs text-[#3A3836] leading-relaxed">{card.limitation}</p>
             </div>
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -248,7 +269,14 @@ function Decisions({
   return (
     <div className="space-y-10">
       {items.map((decision, i) => (
-        <div key={i} className="grid grid-cols-[2rem_1fr] gap-4">
+        <motion.div
+          key={i}
+          className="grid grid-cols-[2rem_1fr] gap-4"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+        >
           <span className="font-[family-name:var(--font-instrument-serif)] italic text-2xl text-[#C07B50]/50 leading-none pt-0.5">
             {String(i + 1).padStart(2, "0")}
           </span>
@@ -266,7 +294,7 @@ function Decisions({
               </ul>
             )}
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -281,7 +309,13 @@ function BeforeAfter({
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div className="bg-[#FEF3EE] border border-[#F2C4A8] rounded-xl p-5">
+      <motion.div
+        className="bg-[#FEF3EE] border border-[#F2C4A8] rounded-xl p-5"
+        initial={{ opacity: 0, x: -12 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
         <p className="text-xs font-semibold text-[#C07B50] tracking-widest uppercase mb-3">
           {before.heading}
         </p>
@@ -293,8 +327,14 @@ function BeforeAfter({
             </li>
           ))}
         </ul>
-      </div>
-      <div className="bg-[#F0F6F2] border border-[#BCDBC7] rounded-xl p-5">
+      </motion.div>
+      <motion.div
+        className="bg-[#F0F6F2] border border-[#BCDBC7] rounded-xl p-5"
+        initial={{ opacity: 0, x: 12 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
         <p className="text-xs font-semibold text-[#2E7D52] tracking-widest uppercase mb-3">
           {after.heading}
         </p>
@@ -306,7 +346,7 @@ function BeforeAfter({
             </li>
           ))}
         </ul>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -318,6 +358,7 @@ function ImagePlaceholder({ caption, tall }: { caption: string; tall?: boolean }
         "w-full bg-[#F2F0EB] border border-[#E6E3DD] rounded-2xl overflow-hidden flex flex-col justify-end",
         tall ? "min-h-[280px]" : "min-h-[200px]",
       ].join(" ")}
+      style={{ boxShadow: "inset 0 2px 8px rgba(0,0,0,0.05)" }}
     >
       <div className="p-4 border-t border-[#E6E3DD] bg-white/60 backdrop-blur-sm">
         <figcaption className="text-xs text-[#9C9A95] leading-snug">{caption}</figcaption>
@@ -354,23 +395,35 @@ function Section({ section, index }: { section: CaseStudySection; index: number 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="border-t border-[#E6E3DD] pt-12 pb-8"
+      className="pb-8"
     >
-      {/* Label — inline above heading, shares same left origin as all content */}
-      <span className="block text-[10px] text-[#8C8B84] tracking-widest uppercase font-medium mb-3">
-        {section.label}
-      </span>
+      {/* Animated divider — grows left-to-right on scroll */}
+      <motion.div
+        className="h-px bg-[#E6E3DD]"
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true, amount: 0 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        style={{ originX: 0 }}
+      />
 
-      {/* Section heading */}
-      {section.heading && (
-        <h2 className="font-[family-name:var(--font-instrument-serif)] italic text-[clamp(1.5rem,3vw,2.25rem)] leading-snug text-[#18171A] max-w-[22ch] mb-8">
-          {section.heading}
-        </h2>
-      )}
+      <div className="pt-12">
+        {/* Label — inline above heading, shares same left origin as all content */}
+        <span className="block text-[10px] text-[#8C8B84] tracking-widest uppercase font-medium mb-3">
+          {section.label}
+        </span>
 
-      {/* Content blocks */}
-      <div className={["space-y-6", !section.heading ? "mt-4" : ""].join(" ").trim()}>
-        {section.blocks.map((block, i) => renderBlock(block, i))}
+        {/* Section heading */}
+        {section.heading && (
+          <h2 className="font-[family-name:var(--font-instrument-serif)] italic text-[clamp(1.5rem,3vw,2.25rem)] leading-snug text-[#18171A] max-w-[22ch] mb-8">
+            {section.heading}
+          </h2>
+        )}
+
+        {/* Content blocks */}
+        <div className={["space-y-6", !section.heading ? "mt-4" : ""].join(" ").trim()}>
+          {section.blocks.map((block, i) => renderBlock(block, i))}
+        </div>
       </div>
     </motion.section>
   );
@@ -394,6 +447,10 @@ function GenericBody({ project }: { project: Project }) {
   );
 }
 
+// ── Animated Link ──────────────────────────────────────────────
+
+const MotionLink = motion(Link);
+
 // ── Main Component ─────────────────────────────────────────────
 
 export default function CaseStudy({ project, content }: Props) {
@@ -401,6 +458,7 @@ export default function CaseStudy({ project, content }: Props) {
   const next = projects[(currentIndex + 1) % projects.length];
 
   return (
+    <MotionConfig reducedMotion="user">
     <article>
       {/* Hero — full-bleed bg, text anchored to shared 900px grid origin */}
       <div
@@ -474,17 +532,20 @@ export default function CaseStudy({ project, content }: Props) {
             <p className="text-[#18171A] font-medium">{next.title}</p>
             <p className="text-sm text-[#6A6764] mt-0.5">{next.category}</p>
           </div>
-          <Link
+          <MotionLink
             href={`/work/${next.slug}`}
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
             className="inline-flex items-center gap-2 bg-[#18171A] text-[#F9F8F5] text-sm font-medium px-5 py-3 rounded-full hover:bg-[#C07B50] transition-colors duration-200 min-h-[44px]"
           >
             View case study
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2.5 7h9M7.5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-          </Link>
+          </MotionLink>
         </div>
       </div>
     </article>
+    </MotionConfig>
   );
 }
