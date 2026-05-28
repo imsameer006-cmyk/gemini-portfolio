@@ -99,14 +99,42 @@ body {
  */
 /*
  * Single-pass shimmer across the entire stages box.
- * A narrow semi-transparent white stripe (the overlay div) translates
- * from fully off-screen left to fully off-screen right, passing over
- * pills and arrows as one continuous beam. The box uses overflow:hidden
- * so the stripe is clipped cleanly at both edges.
+ * Mobile/tablet  → vertical sweep (top → bottom, matches ↓ arrows).
+ * Desktop (lg+)  → horizontal sweep (left → right, matches → arrows).
+ * The box uses overflow:hidden so the stripe is clipped at both edges.
  */
-@keyframes stages-box-shimmer {
+@keyframes stages-box-shimmer-h {
   0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  100% { transform: translateX(100%);  }
+}
+
+@keyframes stages-box-shimmer-v {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100%);  }
+}
+
+/* Mobile default: vertical */
+.stages-shimmer {
+  background: linear-gradient(
+    180deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 80%
+  );
+  animation: stages-box-shimmer-v 1.4s ease-in-out forwards;
+}
+
+/* Desktop override: horizontal */
+@media (min-width: 1024px) {
+  .stages-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.55) 50%,
+      transparent 80%
+    );
+    animation: stages-box-shimmer-h 1.4s ease-in-out forwards;
+  }
 }
 
 /* ── Stages scroll container — hides the horizontal scrollbar ── */

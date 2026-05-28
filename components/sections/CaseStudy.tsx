@@ -191,21 +191,17 @@ function Stages({ items }: { items: string[] }) {
           Mounted fresh each time animKey increments (key= forces
           remount → CSS animation restarts from the beginning).
           pointer-events-none so it never blocks pill interaction.  */}
+      {/* ── Shimmer overlay — direction handled entirely in CSS ── */}
       {animKey > 0 && (
         <div
           key={animKey}
           aria-hidden="true"
-          className="absolute inset-0 pointer-events-none z-10"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.55) 50%, transparent 80%)",
-            animation: "stages-box-shimmer 1.4s ease-in-out forwards",
-          }}
+          className="absolute inset-0 pointer-events-none z-10 stages-shimmer"
         />
       )}
 
-      {/* Scroll container — hidden scrollbar, finger-swipe on mobile/tablet */}
-      <div className="overflow-x-auto stages-scroll px-4">
+      {/* ── Desktop (lg+): horizontal scrollable row, → arrows ── */}
+      <div className="hidden lg:block overflow-x-auto stages-scroll px-4">
         <div className="flex items-center gap-1 flex-nowrap py-3">
           {items.map((stage, i) => (
             <div key={i} className="flex items-center gap-1 shrink-0">
@@ -213,21 +209,28 @@ function Stages({ items }: { items: string[] }) {
                 {stage}
               </span>
               {i < items.length - 1 && (
-                <span className="text-[#C07B50] text-xs shrink-0 select-none" aria-hidden="true">
-                  →
-                </span>
+                <span className="text-[#C07B50] text-xs shrink-0 select-none" aria-hidden="true">→</span>
               )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Right-edge fade — tablet/mobile only, signals swipeable overflow */}
-      <div
-        className="lg:hidden absolute right-0 top-0 bottom-0 w-16 pointer-events-none z-20"
-        style={{ background: "linear-gradient(to right, transparent, #F2F0EB 90%)" }}
-        aria-hidden="true"
-      />
+      {/* ── Mobile/tablet (below lg): vertical stack, ↓ arrows ── */}
+      <div className="lg:hidden px-4 py-4">
+        <div className="flex flex-col items-center gap-2">
+          {items.map((stage, i) => (
+            <div key={i} className="flex flex-col items-center gap-2">
+              <span className="text-[11px] font-medium bg-white border border-[#E6E3DD] text-[#18171A] px-3 py-1.5 rounded-full whitespace-nowrap">
+                {stage}
+              </span>
+              {i < items.length - 1 && (
+                <span className="text-[#C07B50] text-xs select-none" aria-hidden="true">↓</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
