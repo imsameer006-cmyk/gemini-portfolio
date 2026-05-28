@@ -391,10 +391,10 @@ function Section({ section, index }: { section: CaseStudySection; index: number 
   return (
     <motion.section
       id={toSectionId(section.label)}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 36 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, amount: 0.05 }}
+      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
       className="pb-8"
     >
       {/* Animated divider — grows left-to-right on scroll */}
