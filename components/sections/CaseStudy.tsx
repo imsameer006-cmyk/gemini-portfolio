@@ -190,9 +190,9 @@ function Stages({ items }: { items: string[] }) {
   const DUR  = 500; // ms duration for each element's animation
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative border border-[#E6E3DD] rounded-xl overflow-hidden bg-[#F2F0EB]">
       {/* Scroll container — hidden scrollbar, finger-swipe on mobile/tablet */}
-      <div className="overflow-x-auto stages-scroll">
+      <div className="overflow-x-auto stages-scroll px-4">
         {/*
           key={animKey} forces React to unmount + remount this div each
           time the wave triggers, restarting all CSS animations from zero.
@@ -238,7 +238,7 @@ function Stages({ items }: { items: string[] }) {
       {/* Right-edge fade — tablet/mobile only, signals swipeable overflow */}
       <div
         className="lg:hidden absolute right-0 top-0 bottom-0 w-16 pointer-events-none z-10"
-        style={{ background: "linear-gradient(to right, transparent, #F9F8F5 90%)" }}
+        style={{ background: "linear-gradient(to right, transparent, #F2F0EB 90%)" }}
         aria-hidden="true"
       />
     </div>
