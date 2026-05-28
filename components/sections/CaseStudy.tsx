@@ -199,7 +199,7 @@ function Stages({ items }: { items: string[] }) {
           style={{
             background:
               "linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.55) 50%, transparent 80%)",
-            animation: "stages-box-shimmer 1.1s ease-in-out forwards",
+            animation: "stages-box-shimmer 1.4s ease-in-out forwards",
           }}
         />
       )}
