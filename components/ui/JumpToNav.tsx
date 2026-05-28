@@ -95,7 +95,7 @@ export default function JumpToNav() {
       // giving the nav time to fade in before the hero fully exits.
       // rootMargin shrinks the top by nav height so the trigger point
       // is calculated from below the fixed header.
-      { threshold: 0.5, rootMargin: "-64px 0px 0px 0px" }
+      { threshold: 0.75, rootMargin: "-64px 0px 0px 0px" }
     );
     obs.observe(hero);
     return () => obs.disconnect();
