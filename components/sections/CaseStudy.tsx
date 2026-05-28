@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, MotionConfig } from "framer-motion";
+import { motion, MotionConfig, useReducedMotion } from "framer-motion";
 import { CheckCircle, MinusCircle } from "@phosphor-icons/react";
 import Link from "next/link";
 import type { Project, Block, CaseStudySection, CaseStudyData } from "@/lib/types";
@@ -76,6 +76,150 @@ function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
   );
 }
 
+// ── ColCard ────────────────────────────────────────────────────
+// Must be a named component (not an inline helper) so useReducedMotion()
+// can be called as a hook at the top level.
+function ColCard({
+  col,
+}: {
+  col: { heading: string; items: string[]; variant?: string };
+}) {
+  const prefersReduced = useReducedMotion();
+  const v = col.variant ?? "neutral";
+
+  const Icon =
+    v === "positive"
+      ? <CheckCircle size={16} weight="regular" aria-hidden />
+      : v === "warning"
+      ? <MinusCircle size={16} weight="regular" aria-hidden />
+      : null;
+
+  const labelColor = v === "positive" ? "text-[#C07B50]" : "text-[#6A6764]";
+
+  // Hover boxShadow: drop-shadow + per-variant colored inset stroke.
+  // Inset shadow adds a ring without changing card dimensions.
+  const hoverShadow =
+    v === "positive"
+      ? "0 4px 16px rgba(0,0,0,0.08), inset 0 0 0 1.5px rgba(72,110,75,0.45)"
+      : v === "warning"
+      ? "0 4px 16px rgba(0,0,0,0.08), inset 0 0 0 1.5px rgba(192,98,58,0.45)"
+      : "0 4px 16px rgba(0,0,0,0.08)";
+
+  return (
+    // whileHover="hover" (STRING label, not inline object) enables FM
+    // variant propagation: child motion elements animate on their own
+    // independent transition timing when the parent enters "hover".
+    <motion.div
+      className="rounded-xl bg-[#F2F0EB] border border-[#E6E3DD] flex flex-col relative overflow-hidden"
+      style={{ padding: "28px" }}
+      variants={{
+        rest:  { y: 0,  boxShadow: "0 0 0px rgba(0,0,0,0)" },
+        hover: { y: -2, boxShadow: hoverShadow },
+      }}
+      initial="rest"
+      whileHover="hover"
+      transition={{
+        y:         { duration: 0.18, ease: "easeOut" },
+        boxShadow: { duration: 0.4,  ease: [0.22, 1, 0.36, 1] },
+      }}
+    >
+      {/*
+        WHAT EXISTED — radial glow sweeps outward from card centre.
+        Element: 200x200%, centred via negative margins so FM's scale
+        operates cleanly without composing a translate.
+        Keyframe array: invisible dot -> bright mid-point -> settled glow.
+        overflow:hidden on parent clips at card boundary.
+        Skipped entirely under prefers-reduced-motion.
+      */}
+      {!prefersReduced && v === "positive" && (
+        <motion.div
+          aria-hidden="true"
+          className="absolute pointer-events-none"
+          style={{
+            top: "50%",
+            left: "50%",
+            width: "200%",
+            height: "200%",
+            marginLeft: "-100%",
+            marginTop: "-100%",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(72,110,75,0.14) 0%, rgba(72,110,75,0.07) 40%, rgba(72,110,75,0) 70%)",
+          }}
+          variants={{
+            rest:  { scale: 0.15, opacity: 0 },
+            hover: {
+              scale:   [0.15, 0.6,  1.6 ],
+              opacity: [0,    1.0,  0.85],
+            },
+          }}
+          transition={{
+            duration: 1.05,
+            times:    [0, 0.26, 1],
+            ease:     [0.22, 1, 0.36, 1],
+          }}
+        />
+      )}
+
+      {/*
+        WHAT WAS MISSING — gradient sweep contracts inward from edges.
+        Element: inset:0 (card-sized). Background is transparent at centre,
+        coloured at the outer ~30-100% radius.
+        At scale(2) the coloured edges are outside the card (overflow clips).
+        As scale reduces 2->1.35->1.0 those edges sweep inward into view,
+        creating a visible contraction movement from the boundary inward.
+        Skipped entirely under prefers-reduced-motion.
+      */}
+      {!prefersReduced && v === "warning" && (
+        <motion.div
+          aria-hidden="true"
+          className="absolute inset-0 rounded-xl pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 30%, rgba(192,98,58,0.09) 70%, rgba(192,98,58,0.09) 100%)",
+          }}
+          variants={{
+            rest:  { scale: 2,   opacity: 0   },
+            hover: {
+              scale:   [2,    1.35, 1.0 ],
+              opacity: [0,    0.85, 1.0 ],
+            },
+          }}
+          transition={{
+            duration: 1.0,
+            times:    [0, 0.30, 1],
+            ease:     [0.4, 0, 0.2, 1],
+          }}
+        />
+      )}
+
+      {/* Content sits above effect layers via z-index: 1 */}
+      <div className="relative flex flex-col" style={{ zIndex: 1 }}>
+        {/* Header: icon + label, 8px gap, vertically centred */}
+        <div className={`flex items-center gap-2 ${labelColor}`}>
+          {Icon}
+          <p className="text-xs font-semibold tracking-wide uppercase">
+            {col.heading}
+          </p>
+        </div>
+
+        {/* 20px gap between header and list */}
+        <ul className="mt-5 flex flex-col gap-2">
+          {col.items.map((item, i) => (
+            <li
+              key={i}
+              className="text-sm text-[#3A3836]"
+              style={{ lineHeight: "1.8" }}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </motion.div>
+  );
+}
+
 function TwoColList({
   left,
   right,
@@ -83,110 +227,10 @@ function TwoColList({
   left: { heading: string; items: string[]; variant?: string };
   right: { heading: string; items: string[]; variant?: string };
 }) {
-  // Both cards share the same neutral warm surface — distinction lives in icon + label color only
-  const textMap: Record<string, string> = {
-    positive: "text-[#C07B50]",   // page accent (amber/terracotta)
-    warning:  "text-[#6A6764]",   // muted warm grey — reads as "absent", not "bad"
-    neutral:  "text-[#6A6764]",
-  };
-
-  const renderCol = (col: { heading: string; items: string[]; variant?: string }) => {
-    const v = col.variant ?? "neutral";
-    const Icon =
-      v === "positive"
-        ? <CheckCircle size={16} weight="regular" aria-hidden />
-        : v === "warning"
-        ? <MinusCircle size={16} weight="regular" aria-hidden />
-        : null;
-
-    return (
-      /*
-       * whileHover uses a STRING variant name ("hover"), not an inline
-       * object. This enables Framer Motion variant propagation: child
-       * motion elements with matching variants animate simultaneously
-       * with their own independent transition timings.
-       */
-      <motion.div
-        className="rounded-xl bg-[#F2F0EB] border border-[#E6E3DD] flex flex-col relative overflow-hidden"
-        style={{ padding: "28px" }}
-        variants={{
-          rest: { y: 0,  boxShadow: "0 0 0px rgba(0,0,0,0)" },
-          hover: { y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" },
-        }}
-        initial="rest"
-        whileHover="hover"
-        transition={{ duration: 0.18, ease: "easeOut" }}
-      >
-        {/* ── WHAT EXISTED: radial glow expands from centre ── */}
-        {v === "positive" && (
-          <motion.div
-            aria-hidden="true"
-            className="absolute pointer-events-none"
-            style={{
-              /* Centre via top/left + negative margins so FM's scale
-                 transform doesn't need to compose with a translate */
-              top: "50%",
-              left: "50%",
-              width: "200%",
-              height: "200%",
-              marginLeft: "-100%",
-              marginTop: "-100%",
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle, rgba(72,110,75,0.13) 0%, rgba(72,110,75,0.065) 35%, rgba(72,110,75,0) 70%)",
-            }}
-            variants={{
-              rest:  { scale: 0.2, opacity: 0 },
-              hover: { scale: 1.55, opacity: 1 },
-            }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          />
-        )}
-
-        {/* ── WHAT WAS MISSING: inward vignette from edges ── */}
-        {v === "warning" && (
-          <motion.div
-            aria-hidden="true"
-            className="absolute inset-0 rounded-xl pointer-events-none"
-            variants={{
-              rest:  { boxShadow: "inset 0 0 0px rgba(80,45,25,0)" },
-              hover: { boxShadow: "inset 0 0 64px rgba(80,45,25,0.11)" },
-            }}
-            transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
-          />
-        )}
-
-        {/* Content sits above effect layers via z-index: 1 */}
-        <div className="relative flex flex-col" style={{ zIndex: 1 }}>
-          {/* Header — icon + label, 8px gap, vertically centered */}
-          <div className={`flex items-center gap-2 ${textMap[v]}`}>
-            {Icon}
-            <p className="text-xs font-semibold tracking-wide uppercase">
-              {col.heading}
-            </p>
-          </div>
-
-          {/* 20px gap between header and list */}
-          <ul className="mt-5 flex flex-col gap-2">
-            {col.items.map((item, i) => (
-              <li
-                key={i}
-                className="text-sm text-[#3A3836]"
-                style={{ lineHeight: "1.8" }}
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </motion.div>
-    );
-  };
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {renderCol(left)}
-      {renderCol(right)}
+      <ColCard col={left} />
+      <ColCard col={right} />
     </div>
   );
 }
@@ -273,11 +317,7 @@ function Stages({ items }: { items: string[] }) {
   return (
     <div ref={containerRef} className="relative border border-[#E6E3DD] rounded-xl overflow-hidden bg-[#F2F0EB]">
 
-      {/* ── Single-pass shimmer overlay ──────────────────────────
-          Mounted fresh each time animKey increments (key= forces
-          remount → CSS animation restarts from the beginning).
-          pointer-events-none so it never blocks pill interaction.  */}
-      {/* ── Shimmer overlay — direction handled entirely in CSS ── */}
+      {/* Single-pass shimmer overlay — remounted on each scroll-in */}
       {animKey > 0 && (
         <div
           key={animKey}
@@ -286,7 +326,7 @@ function Stages({ items }: { items: string[] }) {
         />
       )}
 
-      {/* ── Desktop (lg+): horizontal scrollable row, → arrows ── */}
+      {/* Desktop (lg+): horizontal scrollable row */}
       <div className="hidden lg:block overflow-x-auto stages-scroll px-4">
         <div className="flex items-center gap-1 flex-nowrap py-3">
           {items.map((stage, i) => (
@@ -302,10 +342,7 @@ function Stages({ items }: { items: string[] }) {
         </div>
       </div>
 
-      {/* ── Mobile/tablet (below lg): vertical stack, ↓ arrows ── */}
-      {/* No items-center on flex parents → default stretch makes every
-          pill span the full container width for uniform sizing.
-          Arrows get their own justify-center wrapper to stay centred.  */}
+      {/* Mobile/tablet (below lg): vertical stack */}
       <div className="lg:hidden px-4 py-4">
         <div className="flex flex-col gap-2">
           {items.map((stage, i) => (
@@ -475,19 +512,16 @@ function Section({ section, index }: { section: CaseStudySection; index: number 
       />
 
       <div className="pt-12">
-        {/* Label — inline above heading, shares same left origin as all content */}
         <span className="block text-[10px] text-[#8C8B84] tracking-widest uppercase font-medium mb-3">
           {section.label}
         </span>
 
-        {/* Section heading */}
         {section.heading && (
           <h2 className="font-[family-name:var(--font-instrument-serif)] italic text-[clamp(1.5rem,3vw,2.25rem)] leading-snug text-[#18171A] max-w-[22ch] mb-8">
             {section.heading}
           </h2>
         )}
 
-        {/* Content blocks */}
         <div className={["space-y-6", !section.heading ? "mt-4" : ""].join(" ").trim()}>
           {section.blocks.map((block, i) => renderBlock(block, i))}
         </div>
