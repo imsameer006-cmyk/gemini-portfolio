@@ -146,18 +146,23 @@ body {
   display: none;
 }
 
-/* ── TwoColList: internal hover pseudo-element effects ──────── */
-
+/* ── Challenge cards: internal hover motion effects ─────────── */
 /*
- * WHAT EXISTED — warm radial glow expands from card center.
- * ::after sits behind card content via z-index:-1 within an
- * isolated stacking context. overflow:hidden clips the oversized
- * circle at the card boundary without affecting the card's own
- * external box-shadow (which is not a child and is not clipped).
+ * The card motion.div gets `position:relative` and `overflow:hidden`
+ * from the .card-glow / .card-vignette class so the expanding glow is
+ * clipped at the card boundary. overflow:hidden on a Framer Motion
+ * element does NOT clip that element's own box-shadow (box-shadow is
+ * the element's own ink-overflow decoration, not descendant content).
+ *
+ * Content inside each card is wrapped in a `position:relative; z-index:1`
+ * div. This is necessary because Framer Motion's y:-2 transform creates
+ * a stacking context — without explicit z-index, ::after (painted last
+ * in source order) would render on top of the card text.
  */
+
+/* WHAT EXISTED — soft radial glow expands outward from card centre */
 .card-glow {
   position: relative;
-  isolation: isolate;
   overflow: hidden;
 }
 .card-glow::after {
@@ -168,24 +173,28 @@ body {
   width: 200%;
   height: 200%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(192, 123, 80, 0.08) 0%, rgba(192, 123, 80, 0) 70%);
-  transform: translate(-50%, -50%) scale(0.6);
+  background: radial-gradient(
+    circle,
+    rgba(72, 110, 75, 0.09)   0%,
+    rgba(72, 110, 75, 0.045) 35%,
+    rgba(72, 110, 75, 0)     70%
+  );
+  /* Start collapsed at centre — invisible */
+  transform: translate(-50%, -50%) scale(0.2);
   opacity: 0;
-  transition: opacity 600ms ease-out, transform 600ms ease-out;
   pointer-events: none;
-  z-index: -1;
+  /* Transition drives both entry and smooth exit */
+  transition:
+    opacity   900ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.card-glow:hover::after {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1.4);
+.card-glow:hover::after,
+.card-glow:focus-visible::after {
+  opacity: 0.85;
+  transform: translate(-50%, -50%) scale(1.55);
 }
 
-/*
- * WHAT WAS MISSING — soft inward vignette deepens from edges.
- * ::before renders before card content in paint order so it sits
- * naturally behind text. border-radius:inherit matches the card's
- * rounded corners so the inset shadow follows the same curve.
- */
+/* WHAT WAS MISSING — soft vignette contracts inward from card edges */
 .card-vignette {
   position: relative;
   overflow: hidden;
@@ -195,16 +204,22 @@ body {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
-  transition: box-shadow 600ms ease-in;
+  /* ::before paints before children in source order → naturally behind text */
+  box-shadow: inset 0 0 0px rgba(80, 45, 25, 0);
+  opacity: 0;
   pointer-events: none;
+  transition:
+    opacity    900ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 900ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-.card-vignette:hover::before {
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.07);
+.card-vignette:hover::before,
+.card-vignette:focus-visible::before {
+  opacity: 1;
+  box-shadow: inset 0 0 64px rgba(80, 45, 25, 0.075);
 }
 
-/* Skip internal pseudo-element animations for reduced-motion users.
-   The existing Framer Motion lift + drop-shadow hover is unaffected. */
+/* Reduced motion — suppress internal motion entirely;
+   the Framer Motion lift + drop-shadow hover remains. */
 @media (prefers-reduced-motion: reduce) {
   .card-glow::after,
   .card-vignette::before {

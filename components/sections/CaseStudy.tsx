@@ -108,26 +108,36 @@ function TwoColList({
         whileHover={{ y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
         transition={{ duration: 0.18, ease: "easeOut" }}
       >
-        {/* Header — icon + label, 8px gap, vertically centered */}
-        <div className={`flex items-center gap-2 ${textMap[v]}`}>
-          {Icon}
-          <p className="text-xs font-semibold tracking-wide uppercase">
-            {col.heading}
-          </p>
-        </div>
+        {/*
+          z-index: 1 ensures this wrapper paints above the ::after glow
+          (which is z-index: auto but renders last in source order within
+          the stacking context Framer Motion creates on hover transform).
+          ::before on .card-vignette renders before children so it is
+          naturally behind this wrapper, but the explicit z-index makes
+          both cards behave consistently.
+        */}
+        <div className="relative flex flex-col" style={{ zIndex: 1 }}>
+          {/* Header — icon + label, 8px gap, vertically centered */}
+          <div className={`flex items-center gap-2 ${textMap[v]}`}>
+            {Icon}
+            <p className="text-xs font-semibold tracking-wide uppercase">
+              {col.heading}
+            </p>
+          </div>
 
-        {/* 20px gap between header and list */}
-        <ul className="mt-5 flex flex-col gap-2">
-          {col.items.map((item, i) => (
-            <li
-              key={i}
-              className="text-sm text-[#3A3836]"
-              style={{ lineHeight: "1.8" }}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
+          {/* 20px gap between header and list */}
+          <ul className="mt-5 flex flex-col gap-2">
+            {col.items.map((item, i) => (
+              <li
+                key={i}
+                className="text-sm text-[#3A3836]"
+                style={{ lineHeight: "1.8" }}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
       </motion.div>
     );
   };
