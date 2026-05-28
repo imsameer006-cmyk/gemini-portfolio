@@ -145,7 +145,7 @@ export default function JumpToNav() {
     const el = document.getElementById(id);
     if (!el) return;
 
-    const isDesktop = window.innerWidth >= 1280;
+    const isDesktop = window.innerWidth >= 1024;
     const offset = isDesktop ? DESKTOP_SCROLL_OFFSET : BOTTOM_SCROLL_OFFSET;
     const top = el.getBoundingClientRect().top + window.scrollY - offset;
 
@@ -170,7 +170,7 @@ export default function JumpToNav() {
           DESKTOP — fixed left sidebar, vertically centred
           Outer div owns the breakpoint; motion.nav owns the animation.
           ═══════════════════════════════════════════════════════ */}
-      <div className="hidden xl:block">
+      <div className="hidden lg:block">
         <AnimatePresence>
           {isVisible && (
             <motion.nav
@@ -221,7 +221,7 @@ export default function JumpToNav() {
           TABLET + MOBILE — fixed bottom bar with slide-up drawer
           Outer div owns the breakpoint; motion.div owns the animation.
           ═══════════════════════════════════════════════════════ */}
-      <div className="xl:hidden">
+      <div className="lg:hidden">
         <AnimatePresence>
           {isVisible && (
             <motion.div
