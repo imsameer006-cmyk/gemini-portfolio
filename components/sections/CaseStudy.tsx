@@ -98,24 +98,65 @@ function TwoColList({
         : v === "warning"
         ? <MinusCircle size={16} weight="regular" aria-hidden />
         : null;
-    const internalHoverClass =
-      v === "positive" ? "card-glow" : v === "warning" ? "card-vignette" : "";
 
     return (
+      /*
+       * whileHover uses a STRING variant name ("hover"), not an inline
+       * object. This enables Framer Motion variant propagation: child
+       * motion elements with matching variants animate simultaneously
+       * with their own independent transition timings.
+       */
       <motion.div
-        className={`rounded-xl bg-[#F2F0EB] border border-[#E6E3DD] flex flex-col ${internalHoverClass}`}
+        className="rounded-xl bg-[#F2F0EB] border border-[#E6E3DD] flex flex-col relative overflow-hidden"
         style={{ padding: "28px" }}
-        whileHover={{ y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
+        variants={{
+          rest: { y: 0,  boxShadow: "0 0 0px rgba(0,0,0,0)" },
+          hover: { y: -2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" },
+        }}
+        initial="rest"
+        whileHover="hover"
         transition={{ duration: 0.18, ease: "easeOut" }}
       >
-        {/*
-          z-index: 1 ensures this wrapper paints above the ::after glow
-          (which is z-index: auto but renders last in source order within
-          the stacking context Framer Motion creates on hover transform).
-          ::before on .card-vignette renders before children so it is
-          naturally behind this wrapper, but the explicit z-index makes
-          both cards behave consistently.
-        */}
+        {/* ── WHAT EXISTED: radial glow expands from centre ── */}
+        {v === "positive" && (
+          <motion.div
+            aria-hidden="true"
+            className="absolute pointer-events-none"
+            style={{
+              /* Centre via top/left + negative margins so FM's scale
+                 transform doesn't need to compose with a translate */
+              top: "50%",
+              left: "50%",
+              width: "200%",
+              height: "200%",
+              marginLeft: "-100%",
+              marginTop: "-100%",
+              borderRadius: "50%",
+              background:
+                "radial-gradient(circle, rgba(72,110,75,0.13) 0%, rgba(72,110,75,0.065) 35%, rgba(72,110,75,0) 70%)",
+            }}
+            variants={{
+              rest:  { scale: 0.2, opacity: 0 },
+              hover: { scale: 1.55, opacity: 1 },
+            }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          />
+        )}
+
+        {/* ── WHAT WAS MISSING: inward vignette from edges ── */}
+        {v === "warning" && (
+          <motion.div
+            aria-hidden="true"
+            className="absolute inset-0 rounded-xl pointer-events-none"
+            variants={{
+              rest:  { boxShadow: "inset 0 0 0px rgba(80,45,25,0)" },
+              hover: { boxShadow: "inset 0 0 64px rgba(80,45,25,0.11)" },
+            }}
+            transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+          />
+        )}
+
+        {/* Content sits above effect layers via z-index: 1 */}
         <div className="relative flex flex-col" style={{ zIndex: 1 }}>
           {/* Header — icon + label, 8px gap, vertically centered */}
           <div className={`flex items-center gap-2 ${textMap[v]}`}>
