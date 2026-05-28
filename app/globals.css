@@ -90,6 +90,33 @@ body {
   }
 }
 
+/* ── Stages lifecycle shimmer ───────────────────────────────── */
+/*
+ * Copper box-shadow glow that pulses once on each pill as the wave
+ * travels through. Arrows receive a matching colour brighten.
+ * Triggered via JS (IntersectionObserver); animation-fill-mode left
+ * unset so elements return to their natural CSS state after play.
+ */
+@keyframes stages-pill-glow {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: 0 0 0 2px rgba(192, 123, 80, 0.2),
+                          0 0 10px rgba(192, 123, 80, 0.1); }
+}
+
+@keyframes stages-arrow-brighten {
+  0%, 100% { color: #C07B50; }
+  50%       { color: #d4935f; }
+}
+
+/* ── Stages scroll container — hides the horizontal scrollbar ── */
+.stages-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.stages-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 /* ── Scrollbar Styling ──────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;

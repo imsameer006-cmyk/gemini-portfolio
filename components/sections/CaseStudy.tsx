@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import type { Project, Block, CaseStudySection, CaseStudyData } from "@/lib/types";
@@ -157,20 +158,89 @@ function ExplorationCards({
 }
 
 function Stages({ items }: { items: string[] }) {
+  const containerRef            = useRef<HTMLDivElement>(null);
+  const [animKey, setAnimKey]   = useState(0);
+  const inViewRef               = useRef(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    // Respect prefers-reduced-motion — skip shimmer entirely in JS
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !inViewRef.current) {
+          inViewRef.current = true;
+          setAnimKey((k) => k + 1); // new key → remount inner div → animations restart
+        }
+        if (!entry.isIntersecting) {
+          inViewRef.current = false; // reset so next scroll-in replays
+        }
+      },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Wave timing: each adjacent element (pill or arrow) starts STEP ms
+  // after the previous one, creating a single left-to-right wave.
+  const STEP = 100; // ms between each element's animation start
+  const DUR  = 500; // ms duration for each element's animation
+
   return (
-    <div className="overflow-x-auto -mx-2 px-2">
-      <div className="flex items-center gap-1.5 flex-nowrap py-3 min-w-max">
-        {items.map((stage, i) => (
-          <div key={i} className="flex items-center gap-1.5">
-            <span className="text-xs font-medium bg-white border border-[#E6E3DD] text-[#18171A] px-3 py-1.5 rounded-full whitespace-nowrap">
-              {stage}
-            </span>
-            {i < items.length - 1 && (
-              <span className="text-[#C07B50] text-sm">→</span>
-            )}
-          </div>
-        ))}
+    <div ref={containerRef} className="relative">
+      {/* Scroll container — hidden scrollbar, finger-swipe on mobile/tablet */}
+      <div className="overflow-x-auto stages-scroll">
+        {/*
+          key={animKey} forces React to unmount + remount this div each
+          time the wave triggers, restarting all CSS animations from zero.
+        */}
+        <div
+          key={animKey}
+          className="flex items-center gap-1 flex-nowrap py-3"
+        >
+          {items.map((stage, i) => {
+            // Pill i starts at position 2i in the sequence (pill, arrow, pill, arrow…)
+            // Arrow after pill i is at position 2i + 1
+            const pillDelay  = i * 2 * STEP;
+            const arrowDelay = i * 2 * STEP + STEP;
+            const animated   = animKey > 0;
+
+            return (
+              <div key={i} className="flex items-center gap-1 shrink-0">
+                <span
+                  className="text-[11px] font-medium bg-white border border-[#E6E3DD] text-[#18171A] px-2 py-1 rounded-full whitespace-nowrap"
+                  style={animated ? {
+                    animation: `stages-pill-glow ${DUR}ms ease-in-out ${pillDelay}ms`,
+                  } : undefined}
+                >
+                  {stage}
+                </span>
+                {i < items.length - 1 && (
+                  <span
+                    className="text-[#C07B50] text-xs shrink-0 select-none"
+                    aria-hidden="true"
+                    style={animated ? {
+                      animation: `stages-arrow-brighten ${DUR}ms ease-in-out ${arrowDelay}ms`,
+                    } : undefined}
+                  >
+                    →
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
+
+      {/* Right-edge fade — tablet/mobile only, signals swipeable overflow */}
+      <div
+        className="lg:hidden absolute right-0 top-0 bottom-0 w-16 pointer-events-none z-10"
+        style={{ background: "linear-gradient(to right, transparent, #F9F8F5 90%)" }}
+        aria-hidden="true"
+      />
     </div>
   );
 }
