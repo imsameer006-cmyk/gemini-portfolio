@@ -177,7 +177,7 @@ export default function JumpToNav() {
   // ── Render ───────────────────────────────────────────────────
   return (
     <>
-      {/* ── Mobile / Tablet bar (< lg) ── */}
+      {/* ── Mobile / Tablet bar (< xl) ── */}
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -185,7 +185,7 @@ export default function JumpToNav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:hidden fixed top-16 inset-x-0 z-30 px-5 pt-2"
+            className="xl:hidden fixed top-16 inset-x-0 z-30 px-5 pt-2"
             ref={mobileRef}
           >
             {/* Trigger */}
@@ -227,7 +227,7 @@ export default function JumpToNav() {
         )}
       </AnimatePresence>
 
-      {/* ── Desktop widget (≥ lg) ── */}
+      {/* ── Desktop widget (≥ xl / 1280px) ── */}
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -235,7 +235,7 @@ export default function JumpToNav() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 10 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="hidden lg:block fixed top-24 right-5 xl:right-8 z-40 w-[192px]"
+            className="hidden xl:block fixed top-24 right-8 z-40 w-[192px]"
             ref={desktopRef}
           >
             {/* Trigger */}
