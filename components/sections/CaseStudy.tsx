@@ -211,9 +211,9 @@ function Stages({ items }: { items: string[] }) {
             return (
               <div key={i} className="flex items-center gap-1 shrink-0">
                 <span
-                  className="text-[11px] font-medium bg-white border border-[#E6E3DD] text-[#18171A] px-2 py-1 rounded-full whitespace-nowrap"
+                  className={`text-[11px] font-medium border border-[#E6E3DD] text-[#18171A] px-2 py-1 rounded-full whitespace-nowrap ${animated ? "stages-pill-shimmer-bg" : "bg-white"}`}
                   style={animated ? {
-                    animation: `stages-pill-glow ${DUR}ms ease-in-out ${pillDelay}ms`,
+                    animation: `stages-pill-shimmer ${DUR}ms ease-in-out ${pillDelay}ms both`,
                   } : undefined}
                 >
                   {stage}

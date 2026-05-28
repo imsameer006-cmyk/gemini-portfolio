@@ -97,10 +97,26 @@ body {
  * Triggered via JS (IntersectionObserver); animation-fill-mode left
  * unset so elements return to their natural CSS state after play.
  */
-@keyframes stages-pill-glow {
-  0%, 100% { box-shadow: none; }
-  50%       { box-shadow: 0 0 0 2px rgba(192, 123, 80, 0.2),
-                          0 0 10px rgba(192, 123, 80, 0.1); }
+/*
+ * Fill-area shimmer: a warm gradient sweeps left → right through the
+ * pill background. background-position animates from -200% (warm
+ * highlight off-screen left) to 100% (off-screen right).
+ * animation-fill-mode: both ensures the pill looks white during the
+ * delay period AND after the animation ends.
+ */
+.stages-pill-shimmer-bg {
+  background: linear-gradient(
+    90deg,
+    #ffffff   0%,
+    #F5E8DC  33%,   /* --color-accent-light, subtle warm sweep */
+    #ffffff  67%
+  );
+  background-size: 300% 100%;
+}
+
+@keyframes stages-pill-shimmer {
+  0%   { background-position: -200% 0; } /* warm highlight off left  */
+  100% { background-position:  100% 0; } /* warm highlight off right */
 }
 
 @keyframes stages-arrow-brighten {
