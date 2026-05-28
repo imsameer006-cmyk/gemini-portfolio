@@ -466,7 +466,7 @@ export default function CaseStudy({ project, content }: Props) {
     <article>
       {/* Hero — full-bleed bg, text anchored to shared 900px grid origin */}
       <div
-        className="min-h-[52vh] md:min-h-[60vh] flex flex-col justify-end pt-32 pb-12"
+        className="min-h-screen flex flex-col justify-center lg:justify-end pt-16 md:pt-20 lg:pt-32 pb-12"
         style={{ backgroundColor: project.coverColor }}
       >
         <div className="max-w-[900px] mx-auto w-full px-6 md:px-10 lg:pl-[150px] xl:pl-10">
