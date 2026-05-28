@@ -56,18 +56,14 @@ function BulletList({ items }: { items: string[] }) {
 function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 border border-[#E6E3DD] rounded-2xl overflow-hidden bg-[#E6E3DD] gap-px">
-      {fields.map(({ label, value }, i) => (
-        <motion.div
+      {fields.map(({ label, value }) => (
+        <div
           key={label}
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.15 }}
-          transition={{ duration: 0.4, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
           className="px-5 py-5 bg-white flex flex-col gap-2"
         >
           <span className="text-[10px] text-[#8C8B84] tracking-widest uppercase font-medium">{label}</span>
           <span className="text-sm font-medium text-[#18171A] leading-snug">{value}</span>
-        </motion.div>
+        </div>
       ))}
     </div>
   );
