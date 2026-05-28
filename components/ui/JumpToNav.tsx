@@ -91,9 +91,11 @@ export default function JumpToNav() {
 
     const obs = new IntersectionObserver(
       ([entry]) => setIsVisible(!entry.isIntersecting),
-      // rootMargin: shrink the viewport top by 64px (nav height)
-      // so nav appears the moment hero clears the sticky header
-      { threshold: 0, rootMargin: "-64px 0px 0px 0px" }
+      // threshold: 0.5 — fires when 50% of the hero has scrolled out,
+      // giving the nav time to fade in before the hero fully exits.
+      // rootMargin shrinks the top by nav height so the trigger point
+      // is calculated from below the fixed header.
+      { threshold: 0.5, rootMargin: "-64px 0px 0px 0px" }
     );
     obs.observe(hero);
     return () => obs.disconnect();
@@ -176,7 +178,7 @@ export default function JumpToNav() {
     SECTIONS.find((s) => toSectionId(s.label) === activeId)?.label ?? "Overview";
 
   // ── Transition config ────────────────────────────────────────
-  const transition = { duration: 0.2, ease: "easeOut" as const };
+  const transition = { duration: 0.5, ease: "easeOut" as const };
 
   return (
     <>
