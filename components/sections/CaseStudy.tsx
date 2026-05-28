@@ -15,7 +15,7 @@ interface Props {
 
 function Paragraph({ text }: { text: string }) {
   return (
-    <p className="text-base text-[#3A3836] leading-relaxed">{text}</p>
+    <p className="text-base text-[#3A3836] leading-relaxed max-w-[640px]">{text}</p>
   );
 }
 
@@ -27,7 +27,7 @@ function Subheading({ text }: { text: string }) {
 
 function Callout({ text }: { text: string }) {
   return (
-    <div className="border-l-[3px] border-[#C07B50] bg-[#F9F4EF] px-6 py-5 rounded-r-xl">
+    <div className="border-l-[3px] border-[#C07B50] bg-[#F9F4EF] px-6 py-5 rounded-r-xl max-w-[640px]">
       <p className="text-[#18171A] text-base leading-relaxed">{text}</p>
     </div>
   );
@@ -289,25 +289,23 @@ function Section({ section, index }: { section: CaseStudySection; index: number 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="border-t border-[#E6E3DD] pt-12 pb-4"
+      className="border-t border-[#E6E3DD] pt-12 pb-8"
     >
-      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 md:gap-12">
-        {/* Left: section label */}
-        <div className="md:pt-0.5">
-          <span className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium">
-            {section.label}
-          </span>
-        </div>
+      {/* Label — inline above heading, shares same left origin as all content */}
+      <span className="block text-[10px] text-[#9C9A95] tracking-widest uppercase font-medium mb-3">
+        {section.label}
+      </span>
 
-        {/* Right: content */}
-        <div className="space-y-6">
-          {section.heading && (
-            <h2 className="font-[family-name:var(--font-instrument-serif)] italic text-[clamp(1.5rem,3vw,2.25rem)] leading-snug text-[#18171A]">
-              {section.heading}
-            </h2>
-          )}
-          {section.blocks.map((block, i) => renderBlock(block, i))}
-        </div>
+      {/* Section heading */}
+      {section.heading && (
+        <h2 className="font-[family-name:var(--font-instrument-serif)] italic text-[clamp(1.5rem,3vw,2.25rem)] leading-snug text-[#18171A] max-w-[22ch] mb-8">
+          {section.heading}
+        </h2>
+      )}
+
+      {/* Content blocks */}
+      <div className={["space-y-6", !section.heading ? "mt-4" : ""].join(" ").trim()}>
+        {section.blocks.map((block, i) => renderBlock(block, i))}
       </div>
     </motion.section>
   );
@@ -339,12 +337,12 @@ export default function CaseStudy({ project, content }: Props) {
 
   return (
     <article>
-      {/* Hero */}
+      {/* Hero — full-bleed bg, text anchored to shared 900px grid origin */}
       <div
-        className="min-h-[52vh] md:min-h-[60vh] flex flex-col justify-end px-6 md:px-10 pt-32 pb-12"
+        className="min-h-[52vh] md:min-h-[60vh] flex flex-col justify-end pt-32 pb-12"
         style={{ backgroundColor: project.coverColor }}
       >
-        <div className="max-w-[1280px] mx-auto w-full">
+        <div className="max-w-[900px] mx-auto w-full px-6 md:px-10">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

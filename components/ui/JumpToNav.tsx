@@ -185,9 +185,11 @@ export default function JumpToNav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="xl:hidden fixed top-16 inset-x-0 z-30 px-5 pt-2"
+            className="xl:hidden fixed top-16 inset-x-0 z-30 pt-2"
             ref={mobileRef}
           >
+            {/* Inner wrapper anchored to shared 900px grid origin */}
+            <div className="max-w-[900px] mx-auto px-6 md:px-10">
             {/* Trigger */}
             <button
               onClick={() => setIsOpen((o) => !o)}
@@ -223,6 +225,7 @@ export default function JumpToNav() {
                 </div>
               )}
             </AnimatePresence>
+            </div>{/* end 900px anchor */}
           </motion.div>
         )}
       </AnimatePresence>
