@@ -388,9 +388,9 @@ export default function CaseStudy({ project, content }: Props) {
       {/* Jump-to navigation — only for pages with rich content */}
       {content && <JumpToNav />}
 
-      {/* Case study body */}
+      {/* Case study body — pb-[80px] on mobile/tablet clears the fixed 52px bottom bar */}
       {content ? (
-        <div className="max-w-[900px] mx-auto px-6 md:px-10 py-16 space-y-0">
+        <div className="max-w-[900px] mx-auto px-6 md:px-10 pt-16 pb-[80px] xl:pb-16 space-y-0">
           {content.sections.map((section, i) => (
             <Section key={section.label} section={section} index={i} />
           ))}
