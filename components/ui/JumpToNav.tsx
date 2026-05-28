@@ -178,7 +178,7 @@ export default function JumpToNav() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -6 }}
             transition={transition}
-            className="hidden xl:block fixed left-6 z-40 top-1/2 -translate-y-1/2"
+            className="hidden xl:block fixed left-8 z-40 top-1/2 -translate-y-1/2"
           >
             <ul className="flex flex-col gap-3 w-[140px]" role="listbox" aria-label="Page sections">
               {SECTIONS.map(({ label }) => {
@@ -189,7 +189,7 @@ export default function JumpToNav() {
                     <span
                       className={[
                         "w-[2px] h-3 rounded-full shrink-0 transition-all duration-200",
-                        isActive ? "bg-[#18171A]" : "bg-transparent",
+                        isActive ? "bg-[#C07B50]" : "bg-transparent",
                       ].join(" ")}
                       aria-hidden="true"
                     />
