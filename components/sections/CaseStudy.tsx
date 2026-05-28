@@ -54,7 +54,7 @@ function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
           key={label}
           className="px-5 py-5 bg-white flex flex-col gap-2"
         >
-          <span className="text-[10px] text-[#9C9A95] tracking-widest uppercase font-medium">{label}</span>
+          <span className="text-[10px] text-[#8C8B84] tracking-widest uppercase font-medium">{label}</span>
           <span className="text-sm font-medium text-[#18171A] leading-snug">{value}</span>
         </div>
       ))}
@@ -146,7 +146,7 @@ function ExplorationCards({
               <p className="text-xs text-[#3A3836] leading-relaxed">{card.strength}</p>
             </div>
             <div>
-              <span className="text-[10px] font-semibold tracking-widest uppercase text-[#9C9A95] block mb-0.5">Limitation</span>
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-[#8C8B84] block mb-0.5">Limitation</span>
               <p className="text-xs text-[#3A3836] leading-relaxed">{card.limitation}</p>
             </div>
           </div>
@@ -292,7 +292,7 @@ function Section({ section, index }: { section: CaseStudySection; index: number 
       className="border-t border-[#E6E3DD] pt-12 pb-8"
     >
       {/* Label — inline above heading, shares same left origin as all content */}
-      <span className="block text-[10px] text-[#9C9A95] tracking-widest uppercase font-medium mb-3">
+      <span className="block text-[10px] text-[#8C8B84] tracking-widest uppercase font-medium mb-3">
         {section.label}
       </span>
 
@@ -403,7 +403,7 @@ export default function CaseStudy({ project, content }: Props) {
       <div className="border-t border-[#E6E3DD] px-6 md:px-10 py-12 bg-[#F9F8F5]">
         <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
-            <p className="text-xs text-[#9C9A95] tracking-widest uppercase font-medium mb-1">
+            <p className="text-xs text-[#8C8B84] tracking-widest uppercase font-medium mb-1">
               Next Project
             </p>
             <p className="text-[#18171A] font-medium">{next.title}</p>
