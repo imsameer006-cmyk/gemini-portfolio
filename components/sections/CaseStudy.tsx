@@ -407,7 +407,7 @@ export default function CaseStudy({ project, content }: Props) {
         className="min-h-[52vh] md:min-h-[60vh] flex flex-col justify-end pt-32 pb-12"
         style={{ backgroundColor: project.coverColor }}
       >
-        <div className="max-w-[900px] mx-auto w-full px-6 md:px-10">
+        <div className="max-w-[900px] mx-auto w-full px-6 md:px-10 lg:pl-[150px] xl:pl-10">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -455,7 +455,7 @@ export default function CaseStudy({ project, content }: Props) {
 
       {/* Case study body — pb-[80px] on mobile/tablet clears the fixed 52px bottom bar */}
       {content ? (
-        <div className="max-w-[900px] mx-auto px-6 md:px-10 lg:pl-44 xl:pl-10 pt-16 pb-[80px] xl:pb-16 space-y-0">
+        <div className="max-w-[900px] mx-auto px-6 md:px-10 lg:pl-[150px] xl:pl-10 pt-16 pb-[80px] xl:pb-16 space-y-0">
           {content.sections.map((section, i) => (
             <Section key={section.label} section={section} index={i} />
           ))}
