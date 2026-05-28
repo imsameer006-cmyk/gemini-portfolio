@@ -184,60 +184,47 @@ function Stages({ items }: { items: string[] }) {
     return () => obs.disconnect();
   }, []);
 
-  // Wave timing: each adjacent element (pill or arrow) starts STEP ms
-  // after the previous one, creating a single left-to-right wave.
-  const STEP = 100; // ms between each element's animation start
-  const DUR  = 500; // ms duration for each element's animation
-
   return (
     <div ref={containerRef} className="relative border border-[#E6E3DD] rounded-xl overflow-hidden bg-[#F2F0EB]">
-      {/* Scroll container — hidden scrollbar, finger-swipe on mobile/tablet */}
-      <div className="overflow-x-auto stages-scroll px-4">
-        {/*
-          key={animKey} forces React to unmount + remount this div each
-          time the wave triggers, restarting all CSS animations from zero.
-        */}
+
+      {/* ── Single-pass shimmer overlay ──────────────────────────
+          Mounted fresh each time animKey increments (key= forces
+          remount → CSS animation restarts from the beginning).
+          pointer-events-none so it never blocks pill interaction.  */}
+      {animKey > 0 && (
         <div
           key={animKey}
-          className="flex items-center gap-1 flex-nowrap py-3"
-        >
-          {items.map((stage, i) => {
-            // Pill i starts at position 2i in the sequence (pill, arrow, pill, arrow…)
-            // Arrow after pill i is at position 2i + 1
-            const pillDelay  = i * 2 * STEP;
-            const arrowDelay = i * 2 * STEP + STEP;
-            const animated   = animKey > 0;
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.55) 50%, transparent 80%)",
+            animation: "stages-box-shimmer 1.1s ease-in-out forwards",
+          }}
+        />
+      )}
 
-            return (
-              <div key={i} className="flex items-center gap-1 shrink-0">
-                <span
-                  className={`text-[11px] font-medium border border-[#E6E3DD] text-[#18171A] px-2 py-1 rounded-full whitespace-nowrap ${animated ? "stages-pill-shimmer-bg" : "bg-white"}`}
-                  style={animated ? {
-                    animation: `stages-pill-shimmer ${DUR}ms ease-in-out ${pillDelay}ms both`,
-                  } : undefined}
-                >
-                  {stage}
+      {/* Scroll container — hidden scrollbar, finger-swipe on mobile/tablet */}
+      <div className="overflow-x-auto stages-scroll px-4">
+        <div className="flex items-center gap-1 flex-nowrap py-3">
+          {items.map((stage, i) => (
+            <div key={i} className="flex items-center gap-1 shrink-0">
+              <span className="text-[11px] font-medium bg-white border border-[#E6E3DD] text-[#18171A] px-2 py-1 rounded-full whitespace-nowrap">
+                {stage}
+              </span>
+              {i < items.length - 1 && (
+                <span className="text-[#C07B50] text-xs shrink-0 select-none" aria-hidden="true">
+                  →
                 </span>
-                {i < items.length - 1 && (
-                  <span
-                    className="text-[#C07B50] text-xs shrink-0 select-none"
-                    aria-hidden="true"
-                    style={animated ? {
-                      animation: `stages-arrow-brighten ${DUR}ms ease-in-out ${arrowDelay}ms`,
-                    } : undefined}
-                  >
-                    →
-                  </span>
-                )}
-              </div>
-            );
-          })}
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Right-edge fade — tablet/mobile only, signals swipeable overflow */}
       <div
-        className="lg:hidden absolute right-0 top-0 bottom-0 w-16 pointer-events-none z-10"
+        className="lg:hidden absolute right-0 top-0 bottom-0 w-16 pointer-events-none z-20"
         style={{ background: "linear-gradient(to right, transparent, #F2F0EB 90%)" }}
         aria-hidden="true"
       />

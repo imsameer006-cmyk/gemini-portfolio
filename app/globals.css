@@ -98,30 +98,15 @@ body {
  * unset so elements return to their natural CSS state after play.
  */
 /*
- * Fill-area shimmer: a warm gradient sweeps left → right through the
- * pill background. background-position animates from -200% (warm
- * highlight off-screen left) to 100% (off-screen right).
- * animation-fill-mode: both ensures the pill looks white during the
- * delay period AND after the animation ends.
+ * Single-pass shimmer across the entire stages box.
+ * A narrow semi-transparent white stripe (the overlay div) translates
+ * from fully off-screen left to fully off-screen right, passing over
+ * pills and arrows as one continuous beam. The box uses overflow:hidden
+ * so the stripe is clipped cleanly at both edges.
  */
-.stages-pill-shimmer-bg {
-  background: linear-gradient(
-    90deg,
-    #ffffff   0%,
-    #F5E8DC  33%,   /* --color-accent-light, subtle warm sweep */
-    #ffffff  67%
-  );
-  background-size: 300% 100%;
-}
-
-@keyframes stages-pill-shimmer {
-  0%   { background-position: -200% 0; } /* warm highlight off left  */
-  100% { background-position:  100% 0; } /* warm highlight off right */
-}
-
-@keyframes stages-arrow-brighten {
-  0%, 100% { color: #C07B50; }
-  50%       { color: #d4935f; }
+@keyframes stages-box-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* ── Stages scroll container — hides the horizontal scrollbar ── */
