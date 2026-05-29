@@ -31,8 +31,8 @@ export type Block =
   | { type: "meta-grid"; fields: { label: string; value: string }[] }
   | {
       type: "two-col-list";
-      left: { heading: string; items: string[]; variant?: "positive" | "warning" | "neutral" };
-      right: { heading: string; items: string[]; variant?: "positive" | "warning" | "neutral" };
+      left: { heading: string; items: (string | { label: string; detail: string })[]; variant?: "positive" | "warning" | "neutral" };
+      right: { heading: string; items: (string | { label: string; detail: string })[]; variant?: "positive" | "warning" | "neutral" };
     }
   | { type: "role-list"; items: { abbr: string; description: string }[] }
   | {

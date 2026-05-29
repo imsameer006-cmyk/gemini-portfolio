@@ -77,10 +77,12 @@ function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
 }
 
 // ── ColCard ────────────────────────────────────────────────────
+type ColItem = string | { label: string; detail: string };
+
 function ColCard({
   col,
 }: {
-  col: { heading: string; items: string[]; variant?: string };
+  col: { heading: string; items: ColItem[]; variant?: string };
 }) {
   const prefersReduced = useReducedMotion();
   const v = col.variant ?? "neutral";
@@ -95,9 +97,9 @@ function ColCard({
 
   const Icon =
     v === "positive"
-      ? <CheckCircle size={16} weight="regular" aria-hidden />
+      ? <CheckCircle size={14} weight="light" aria-hidden />
       : v === "warning"
-      ? <MinusCircle size={16} weight="regular" aria-hidden />
+      ? <MinusCircle size={14} weight="light" aria-hidden />
       : null;
 
   const labelColor = v === "positive" ? "text-[#C07B50]" : "text-[#6A6764]";
@@ -181,22 +183,35 @@ function ColCard({
 
       {/* Content sits above glow layer */}
       <div className="relative flex flex-col" style={{ zIndex: 1 }}>
+        {/* Header zone */}
         <div className={`flex items-center gap-2 ${labelColor}`}>
           {Icon}
-          <p className="text-xs font-semibold tracking-wide uppercase">
+          <p className="text-[10px] font-semibold tracking-widest uppercase">
             {col.heading}
           </p>
         </div>
-        <ul className="mt-5 flex flex-col gap-2">
-          {col.items.map((item, i) => (
-            <li
-              key={i}
-              className="text-sm text-[#3A3836]"
-              style={{ lineHeight: "1.8" }}
-            >
-              {item}
-            </li>
-          ))}
+
+        {/* Subtle structural divider */}
+        <div className="mt-5 h-px bg-[#E6E3DD]" />
+
+        {/* Item list */}
+        <ul className="mt-5 flex flex-col gap-5">
+          {col.items.map((item, i) =>
+            typeof item === "string" ? (
+              <li key={i} className="text-sm text-[#3A3836] leading-relaxed">
+                {item}
+              </li>
+            ) : (
+              <li key={i} className="flex flex-col gap-1">
+                <span className="text-sm font-medium text-[#18171A] leading-snug">
+                  {item.label}
+                </span>
+                <span className="text-xs text-[#8C8B84] leading-relaxed">
+                  {item.detail}
+                </span>
+              </li>
+            )
+          )}
         </ul>
       </div>
     </motion.div>
@@ -207,8 +222,8 @@ function TwoColList({
   left,
   right,
 }: {
-  left: { heading: string; items: string[]; variant?: string };
-  right: { heading: string; items: string[]; variant?: string };
+  left: { heading: string; items: ColItem[]; variant?: string };
+  right: { heading: string; items: ColItem[]; variant?: string };
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
