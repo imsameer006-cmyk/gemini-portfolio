@@ -439,12 +439,7 @@ function BACard({
 
   return (
     <motion.div
-      className={[
-        "rounded-xl p-5 relative overflow-hidden",
-        isAfter
-          ? "bg-[#F0F6F2] border border-[#BCDBC7]"
-          : "bg-[#FEF3EE] border border-[#F2C4A8]",
-      ].join(" ")}
+      className="rounded-xl p-5 relative overflow-hidden bg-[#F2F0EB] border border-[#E6E3DD]"
       initial={{ opacity: 0, x: slideDir }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.15 }}
