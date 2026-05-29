@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { motion, MotionConfig, useReducedMotion } from "framer-motion";
+import { useRef, useState, useEffect, useMemo } from "react";
+import { motion, MotionConfig, useReducedMotion, useAnimation } from "framer-motion";
 import { CheckCircle, MinusCircle } from "@phosphor-icons/react";
 import Link from "next/link";
 import type { Project, Block, CaseStudySection, CaseStudyData } from "@/lib/types";
@@ -77,8 +77,6 @@ function MetaGrid({ fields }: { fields: { label: string; value: string }[] }) {
 }
 
 // ── ColCard ────────────────────────────────────────────────────
-// Must be a named component (not an inline helper) so useReducedMotion()
-// can be called as a hook at the top level.
 function ColCard({
   col,
 }: {
@@ -86,6 +84,14 @@ function ColCard({
 }) {
   const prefersReduced = useReducedMotion();
   const v = col.variant ?? "neutral";
+  const glowControls = useAnimation();
+
+  // True only on devices that support real hover (mouse/trackpad).
+  // Phones and tablets report (hover: none) so they get the static path.
+  const [canHover, setCanHover] = useState(false);
+  useEffect(() => {
+    setCanHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+  }, []);
 
   const Icon =
     v === "positive"
@@ -96,114 +102,91 @@ function ColCard({
 
   const labelColor = v === "positive" ? "text-[#C07B50]" : "text-[#6A6764]";
 
-  // Hover boxShadow: drop-shadow + per-variant colored inset stroke.
-  // Inset shadow adds a ring without changing card dimensions.
   const hoverShadow =
     v === "positive"
-      ? "0 4px 16px rgba(0,0,0,0.08), inset 0 0 0 1.5px rgba(72,110,75,0.45)"
+      ? "0 4px 20px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(72,110,75,0.22)"
       : v === "warning"
-      ? "0 4px 16px rgba(0,0,0,0.08), inset 0 0 0 1.5px rgba(192,98,58,0.45)"
-      : "0 4px 16px rgba(0,0,0,0.08)";
+      ? "0 4px 20px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(180,60,60,0.22)"
+      : "0 4px 20px rgba(0,0,0,0.06)";
+
+  // Hover-in: full directional animation (desktop only)
+  const handleHoverStart = () => {
+    if (!canHover || prefersReduced || v === "neutral") return;
+    if (v === "positive") {
+      glowControls.start({
+        scale:   [0.02, 0.55, 1.5],
+        opacity: [0,    1.0,  0.85],
+        transition: { duration: 2.5, times: [0, 0.25, 1], ease: ["easeIn", [0.22, 1, 0.36, 1]] },
+      });
+    } else {
+      glowControls.start({
+        scale:   [2.5,  1.1,  1.0],
+        opacity: [0,    1.0,  0.88],
+        transition: { duration: 2.5, times: [0, 0.75, 1], ease: [0.22, 1, 0.36, 1] },
+      });
+    }
+  };
+
+  // Hover-out: fade opacity only — glow dissolves in place, no movement
+  const handleHoverEnd = () => {
+    if (!canHover || prefersReduced || v === "neutral") return;
+    glowControls.start({
+      opacity: 0,
+      transition: { duration: 0.5, ease: "easeOut" },
+    });
+  };
 
   return (
-    // whileHover="hover" (STRING label, not inline object) enables FM
-    // variant propagation: child motion elements animate on their own
-    // independent transition timing when the parent enters "hover".
     <motion.div
       className="rounded-xl bg-[#F2F0EB] border border-[#E6E3DD] flex flex-col relative overflow-hidden"
-      style={{ padding: "28px" }}
-      variants={{
-        rest:  { y: 0,  boxShadow: "0 0 0px rgba(0,0,0,0)" },
-        hover: { y: -2, boxShadow: hoverShadow },
+      style={{
+        padding: "28px",
+        // Ambient shadow always visible — gives cards depth on touch devices
+        // where hover never fires. On desktop it's replaced by hoverShadow.
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
       }}
-      initial="rest"
-      whileHover="hover"
+      whileHover={canHover ? { y: -2, boxShadow: hoverShadow } : undefined}
+      onHoverStart={handleHoverStart}
+      onHoverEnd={handleHoverEnd}
       transition={{
         y:         { duration: 0.18, ease: "easeOut" },
         boxShadow: { duration: 0.4,  ease: [0.22, 1, 0.36, 1] },
       }}
     >
-      {/*
-        WHAT EXISTED — radial glow sweeps outward from card centre.
-        Element: 200x200%, centred via negative margins so FM's scale
-        operates cleanly without composing a translate.
-        Keyframe array: invisible dot -> bright mid-point -> settled glow.
-        overflow:hidden on parent clips at card boundary.
-        Skipped entirely under prefers-reduced-motion.
-      */}
-      {!prefersReduced && v === "positive" && (
+      {/* Glow — only rendered when hover is supported */}
+      {!prefersReduced && canHover && v !== "neutral" && (
         <motion.div
           aria-hidden="true"
           className="absolute pointer-events-none"
+          initial={{ scale: v === "positive" ? 0.02 : 2.5, opacity: 0 }}
+          animate={glowControls}
           style={{
             top: "50%",
             left: "50%",
-            width: "200%",
-            height: "200%",
-            marginLeft: "-100%",
-            marginTop: "-100%",
+            x: "-50%",
+            y: "-50%",
+            width: "400px",
+            height: "400px",
             borderRadius: "50%",
+            // Card 1: bright centre fading out — expansion reads clearly.
+            // Card 2: ring gradient (transparent core, colour at ~64% radius)
+            // so the ring is trackable as it sweeps from outside → card edges.
             background:
-              "radial-gradient(circle, rgba(72,110,75,0.14) 0%, rgba(72,110,75,0.07) 40%, rgba(72,110,75,0) 70%)",
-          }}
-          variants={{
-            rest:  { scale: 0.15, opacity: 0 },
-            hover: {
-              scale:   [0.15, 0.6,  1.6 ],
-              opacity: [0,    1.0,  0.85],
-            },
-          }}
-          transition={{
-            duration: 1.05,
-            times:    [0, 0.26, 1],
-            ease:     [0.22, 1, 0.36, 1],
+              v === "positive"
+                ? "radial-gradient(circle, rgba(72,110,75,0.16) 0%, rgba(72,110,75,0.08) 40%, rgba(72,110,75,0) 70%)"
+                : "radial-gradient(circle, rgba(180,60,60,0.16) 0%, rgba(180,60,60,0.08) 40%, rgba(180,60,60,0) 70%)",
           }}
         />
       )}
 
-      {/*
-        WHAT WAS MISSING — gradient sweep contracts inward from edges.
-        Element: inset:0 (card-sized). Background is transparent at centre,
-        coloured at the outer ~30-100% radius.
-        At scale(2) the coloured edges are outside the card (overflow clips).
-        As scale reduces 2->1.35->1.0 those edges sweep inward into view,
-        creating a visible contraction movement from the boundary inward.
-        Skipped entirely under prefers-reduced-motion.
-      */}
-      {!prefersReduced && v === "warning" && (
-        <motion.div
-          aria-hidden="true"
-          className="absolute inset-0 rounded-xl pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, transparent 30%, rgba(192,98,58,0.09) 70%, rgba(192,98,58,0.09) 100%)",
-          }}
-          variants={{
-            rest:  { scale: 2,   opacity: 0   },
-            hover: {
-              scale:   [2,    1.35, 1.0 ],
-              opacity: [0,    0.85, 1.0 ],
-            },
-          }}
-          transition={{
-            duration: 1.0,
-            times:    [0, 0.30, 1],
-            ease:     [0.4, 0, 0.2, 1],
-          }}
-        />
-      )}
-
-      {/* Content sits above effect layers via z-index: 1 */}
+      {/* Content sits above glow layer */}
       <div className="relative flex flex-col" style={{ zIndex: 1 }}>
-        {/* Header: icon + label, 8px gap, vertically centred */}
         <div className={`flex items-center gap-2 ${labelColor}`}>
           {Icon}
           <p className="text-xs font-semibold tracking-wide uppercase">
             {col.heading}
           </p>
         </div>
-
-        {/* 20px gap between header and list */}
         <ul className="mt-5 flex flex-col gap-2">
           {col.items.map((item, i) => (
             <li
