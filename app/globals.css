@@ -161,6 +161,88 @@ body {
   background: var(--color-text-muted);
 }
 
+/* ── Role pill + tooltip (desktop only) ─────────────────────── */
+
+.role-pill {
+  display: inline-block;
+  background: #FBF5EF;
+  border: 1px solid #EDD9C8;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #C07B50;
+}
+
+@media (min-width: 1024px) {
+  .role-pill {
+    position: relative;
+    cursor: default;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+
+  /* Tooltip bubble */
+  .role-pill::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0;
+    border-radius: 6px;
+    padding: 5px 10px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+    z-index: 20;
+  }
+
+  /* Downward arrow — sits flush against tooltip bottom, points toward pill */
+  .role-pill::after {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 3px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1a1a1a;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+    z-index: 20;
+  }
+
+  /* Hover — pill color shift */
+  .role-pill:hover {
+    background: #F5EAE0;
+    border-color: #C07B50;
+    color: #A0622E;
+  }
+
+  /* Hover — reveal tooltip + arrow */
+  .role-pill:hover::before,
+  .role-pill:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion: no transitions on pill or tooltip */
+@media (prefers-reduced-motion: reduce) {
+  .role-pill {
+    transition: none;
+  }
+  .role-pill::before,
+  .role-pill::after {
+    transition: none;
+  }
+}
+
 /* ── Card hover — bloom + shimmer ───────────────────────────── */
 
 /* ::before bloom layer */

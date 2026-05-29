@@ -34,7 +34,7 @@ export type Block =
       left: { heading: string; items: (string | { label: string; detail: string })[]; variant?: "positive" | "warning" | "neutral" };
       right: { heading: string; items: (string | { label: string; detail: string })[]; variant?: "positive" | "warning" | "neutral" };
     }
-  | { type: "role-list"; items: { abbr: string; description: string }[] }
+  | { type: "role-list"; items: { abbr: string; fullName: string; description: string }[] }
   | {
       type: "exploration-cards";
       items: {

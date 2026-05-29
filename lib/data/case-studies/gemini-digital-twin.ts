@@ -93,10 +93,10 @@ export const geminiDigitalTwin: CaseStudyData = {
         {
           type: "role-list",
           items: [
-            { abbr: "FAE", description: "captures customer requirements and submits modules" },
-            { abbr: "PAE", description: "performs technical feasibility assessment" },
-            { abbr: "PMG", description: "conducts commercial evaluation" },
-            { abbr: "PJM", description: "manages design specification and production integration" },
+            { abbr: "FAE", fullName: "Field Application Engineer",   description: "captures customer requirements and submits modules" },
+            { abbr: "PAE", fullName: "Product Application Engineer", description: "performs technical feasibility assessment" },
+            { abbr: "PMG", fullName: "Product Manager",              description: "conducts commercial evaluation" },
+            { abbr: "PJM", fullName: "Project Manager",              description: "manages design specification and production integration" },
           ],
         },
         {

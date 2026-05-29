@@ -167,11 +167,11 @@ function TwoColList({
   );
 }
 
-function RoleList({ items }: { items: { abbr: string; description: string }[] }) {
+function RoleList({ items }: { items: { abbr: string; fullName: string; description: string }[] }) {
   return (
     <table style={{ width: "100%", borderCollapse: "collapse" }}>
       <tbody>
-        {items.map(({ abbr, description }, i) => (
+        {items.map(({ abbr, fullName, description }, i) => (
           <tr
             key={abbr}
             style={{
@@ -180,17 +180,8 @@ function RoleList({ items }: { items: { abbr: string; description: string }[] })
             }}
           >
             <td style={{ width: "72px", padding: "13px 0", verticalAlign: "top" }}>
-              <span style={{
-                display: "inline-block",
-                background: "#FBF5EF",
-                border: "1px solid #EDD9C8",
-                borderRadius: "4px",
-                padding: "3px 8px",
-                fontSize: "10px",
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                color: "#C07B50",
-              }}>
+              {/* role-pill: static on mobile/tablet, hover + tooltip on desktop via CSS */}
+              <span className="role-pill" data-tooltip={fullName}>
                 {abbr}
               </span>
             </td>
