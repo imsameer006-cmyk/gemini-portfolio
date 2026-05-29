@@ -169,21 +169,44 @@ function TwoColList({
 
 function RoleList({ items }: { items: { abbr: string; description: string }[] }) {
   return (
-    <div className="space-y-1">
-      {items.map(({ abbr, description }) => (
-        <motion.div
-          key={abbr}
-          className="flex gap-3 items-baseline px-2 py-2 -mx-2 rounded-lg"
-          whileHover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
-          transition={{ duration: 0.15 }}
-        >
-          <span className="text-sm font-semibold text-[#C07B50] w-10 shrink-0">{abbr}</span>
-          <span className="text-sm text-[#3A3836] leading-relaxed">
-            — {description}
-          </span>
-        </motion.div>
-      ))}
-    </div>
+    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <tbody>
+        {items.map(({ abbr, description }, i) => (
+          <tr
+            key={abbr}
+            style={{
+              borderTop:    i === 0 ? "1px solid #F0EDE8" : undefined,
+              borderBottom: "1px solid #F0EDE8",
+            }}
+          >
+            <td style={{ width: "72px", padding: "13px 0", verticalAlign: "top" }}>
+              <span style={{
+                display: "inline-block",
+                background: "#FBF5EF",
+                border: "1px solid #EDD9C8",
+                borderRadius: "4px",
+                padding: "3px 8px",
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                color: "#C07B50",
+              }}>
+                {abbr}
+              </span>
+            </td>
+            <td style={{
+              padding: "13px 0",
+              verticalAlign: "top",
+              fontSize: "13px",
+              color: "#444",
+              lineHeight: 1.5,
+            }}>
+              {description}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
