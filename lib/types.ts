@@ -51,8 +51,8 @@ export type Block =
     }
   | {
       type: "before-after";
-      before: { heading: string; items: string[] };
-      after: { heading: string; items: string[] };
+      before: { heading: string; items: (string | { label: string; detail: string })[] };
+      after: { heading: string; items: (string | { label: string; detail: string })[] };
     }
   | { type: "image-placeholder"; caption: string; tall?: boolean };
 

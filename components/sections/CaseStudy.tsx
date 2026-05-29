@@ -402,6 +402,8 @@ function Decisions({
 
 // ── BACard ─────────────────────────────────────────────────────
 // Before = red glow contracts inward  |  After = green glow expands outward
+type BAItem = string | { label: string; detail: string };
+
 function BACard({
   variant,
   heading,
@@ -410,7 +412,7 @@ function BACard({
 }: {
   variant: "before" | "after";
   heading: string;
-  items: string[];
+  items: BAItem[];
   slideDir: number;
 }) {
   const prefersReduced = useReducedMotion();
@@ -454,11 +456,11 @@ function BACard({
 
   return (
     <motion.div
-      className="rounded-xl p-5 relative overflow-hidden bg-[#F2F0EB] border border-[#E6E3DD]"
+      className="rounded-xl relative overflow-hidden bg-[#F2F0EB] border border-[#E6E3DD]"
+      style={{ padding: "28px", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}
       initial={{ opacity: 0, x: slideDir }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.15 }}
-      style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}
       whileHover={canHover ? {
         y: -2,
         boxShadow: hoverShadow,
@@ -491,22 +493,36 @@ function BACard({
       )}
 
       {/* Content */}
-      <div className="relative" style={{ zIndex: 1 }}>
+      <div className="relative flex flex-col" style={{ zIndex: 1 }}>
+        {/* Header zone — Before mirrors warning (gray), After mirrors positive (orange) */}
         <p className={[
-          "text-xs font-semibold tracking-widest uppercase mb-3",
-          isAfter ? "text-[#2E7D52]" : "text-[#C07B50]",
+          "text-[10px] font-semibold tracking-widest uppercase",
+          isAfter ? "text-[#C07B50]" : "text-[#6A6764]",
         ].join(" ")}>
           {heading}
         </p>
-        <ul className="space-y-2">
-          {items.map((item, i) => (
-            <li key={i} className="text-sm text-[#3A3836] leading-relaxed flex gap-2">
-              <span className={`mt-0.5 ${isAfter ? "text-[#2E7D52]" : "text-[#C07B50]"}`}>
-                {isAfter ? "✓" : "—"}
-              </span>
-              {item}
-            </li>
-          ))}
+
+        {/* Subtle structural divider */}
+        <div className="mt-5 h-px bg-[#E6E3DD]" />
+
+        {/* Item list */}
+        <ul className="mt-5 flex flex-col gap-5">
+          {items.map((item, i) =>
+            typeof item === "string" ? (
+              <li key={i} className="text-sm text-[#3A3836] leading-relaxed">
+                {item}
+              </li>
+            ) : (
+              <li key={i} className="flex flex-col gap-1">
+                <span className="text-sm font-medium text-[#18171A] leading-snug">
+                  {item.label}
+                </span>
+                <span className="text-xs text-[#8C8B84] leading-relaxed">
+                  {item.detail}
+                </span>
+              </li>
+            )
+          )}
         </ul>
       </div>
     </motion.div>
@@ -517,8 +533,8 @@ function BeforeAfter({
   before,
   after,
 }: {
-  before: { heading: string; items: string[] };
-  after: { heading: string; items: string[] };
+  before: { heading: string; items: BAItem[] };
+  after: { heading: string; items: BAItem[] };
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

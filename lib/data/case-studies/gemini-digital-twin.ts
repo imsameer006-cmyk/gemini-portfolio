@@ -326,19 +326,19 @@ export const geminiDigitalTwin: CaseStudyData = {
           before: {
             heading: "Before Short Flow",
             items: [
-              "Status tracked through email",
-              "Ownership unclear",
-              "Feedback scattered across tools",
-              "Manual follow-ups required",
+              { label: "Status tracked through email", detail: "No visibility inside the product — engineers relied on inbox threads" },
+              { label: "Ownership unclear", detail: "No system indicator of who was responsible for the next action" },
+              { label: "Feedback scattered across tools", detail: "Rejection notes arrived separately, disconnected from the module" },
+              { label: "Manual follow-ups required", detail: "FAEs had to chase engineering teams to learn review outcomes" },
             ],
           },
           after: {
             heading: "After Short Flow",
             items: [
-              "Status visible in the product",
-              "Responsible owner shown",
-              "Feedback attached to workflow state",
-              "Next action clear",
+              { label: "Status visible in the product", detail: "Approval stage surfaced directly inside the module interface" },
+              { label: "Responsible owner shown", detail: "Assigned reviewer always visible alongside the current module state" },
+              { label: "Feedback attached to workflow state", detail: "Rejection comments appeared in context, linked to the relevant module" },
+              { label: "Next action clear", detail: "Guided CTAs showed what to do next based on the current state" },
             ],
           },
         },
