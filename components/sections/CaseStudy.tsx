@@ -168,34 +168,119 @@ function TwoColList({
 }
 
 function RoleList({ items }: { items: { abbr: string; fullName: string; description: string }[] }) {
+  const [hovered, setHovered] = useState<string | null>(null);
+  // canInteract: true only on hover-capable desktop at ≥1024px without reduced motion
+  const [canInteract, setCanInteract] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      const hover   = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      const desktop = window.innerWidth >= 1024;
+      const noMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      setCanInteract(hover && desktop && !noMotion);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   return (
     <table style={{ width: "100%", borderCollapse: "collapse" }}>
       <tbody>
-        {items.map(({ abbr, fullName, description }, i) => (
-          <tr
-            key={abbr}
-            style={{
-              borderTop:    i === 0 ? "1px solid #F0EDE8" : undefined,
-              borderBottom: "1px solid #F0EDE8",
-            }}
-          >
-            <td style={{ width: "72px", padding: "13px 0", verticalAlign: "top" }}>
-              {/* role-pill: static on mobile/tablet, hover + tooltip on desktop via CSS */}
-              <span className="role-pill" data-tooltip={fullName}>
-                {abbr}
-              </span>
-            </td>
-            <td style={{
-              padding: "13px 0",
-              verticalAlign: "top",
-              fontSize: "13px",
-              color: "#444",
-              lineHeight: 1.5,
-            }}>
-              {description}
-            </td>
-          </tr>
-        ))}
+        {items.map(({ abbr, fullName, description }, i) => {
+          const active = canInteract && hovered === abbr;
+          return (
+            <tr
+              key={abbr}
+              style={{
+                borderTop:    i === 0 ? "1px solid #F0EDE8" : undefined,
+                borderBottom: "1px solid #F0EDE8",
+              }}
+            >
+              <td style={{ width: "72px", padding: "13px 0", verticalAlign: "top" }}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    position: "relative",
+                    background:   active ? "#F5EAE0" : "#FBF5EF",
+                    border:       `1px solid ${active ? "#C07B50" : "#EDD9C8"}`,
+                    borderRadius: "4px",
+                    padding:      "3px 8px",
+                    fontSize:     "10px",
+                    fontWeight:   700,
+                    letterSpacing:"0.08em",
+                    color:        active ? "#A0622E" : "#C07B50",
+                    cursor:       canInteract ? "default" : undefined,
+                    transition:   canInteract
+                      ? "background 150ms ease, border-color 150ms ease, color 150ms ease"
+                      : undefined,
+                  }}
+                  onMouseEnter={() => canInteract && setHovered(abbr)}
+                  onMouseLeave={() => canInteract && setHovered(null)}
+                >
+                  {abbr}
+
+                  {/* Tooltip — only when hovered on desktop */}
+                  {active && (
+                    <>
+                      {/* Bubble */}
+                      <motion.span
+                        aria-hidden="true"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        style={{
+                          position:     "absolute",
+                          bottom:       "calc(100% + 8px)",
+                          left:         "50%",
+                          transform:    "translateX(-50%)",
+                          background:   "#1a1a1a",
+                          color:        "#fff",
+                          fontSize:     "11px",
+                          fontWeight:   500,
+                          letterSpacing: 0,
+                          borderRadius: "6px",
+                          padding:      "5px 10px",
+                          whiteSpace:   "nowrap",
+                          pointerEvents:"none",
+                          zIndex:       20,
+                        }}
+                      >
+                        {fullName}
+                      </motion.span>
+                      {/* Downward arrow */}
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          position:    "absolute",
+                          bottom:      "calc(100% + 3px)",
+                          left:        "50%",
+                          transform:   "translateX(-50%)",
+                          width:       0,
+                          height:      0,
+                          borderLeft:  "5px solid transparent",
+                          borderRight: "5px solid transparent",
+                          borderTop:   "5px solid #1a1a1a",
+                          pointerEvents:"none",
+                          zIndex:      20,
+                        }}
+                      />
+                    </>
+                  )}
+                </span>
+              </td>
+              <td style={{
+                padding:      "13px 0",
+                verticalAlign:"top",
+                fontSize:     "13px",
+                color:        "#444",
+                lineHeight:   1.5,
+              }}>
+                {description}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
@@ -440,6 +525,157 @@ function BeforeAfter({
   );
 }
 
+function Lightbox({ type = "image", src, alt, caption, onClose }: { type?: "image" | "video"; src: string; alt?: string; caption: string; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-5 right-5 z-10 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors"
+        aria-label="Close"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+      </button>
+
+      {/* Image — stop click from bubbling to overlay */}
+      <motion.div
+        className="relative z-10 flex flex-col items-center gap-4 px-6"
+        style={{ maxWidth: "min(1400px, 92vw)" }}
+        initial={{ scale: 0.96, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.96, opacity: 0 }}
+        transition={{ duration: 0.22 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {type === "video" ? (
+          <video
+            src={src}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-auto rounded-xl"
+            style={{ maxHeight: "82vh", objectFit: "contain", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }}
+          />
+        ) : (
+          <img
+            src={src}
+            alt={alt}
+            className="w-full h-auto rounded-xl"
+            style={{ maxHeight: "82vh", objectFit: "contain", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }}
+          />
+        )}
+        {caption && (
+          <p className="text-xs text-white/50 text-center leading-snug">{caption}</p>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+import { AnimatePresence } from "framer-motion";
+
+function CaseStudyImage({ src, caption, alt }: { src: string; caption: string; alt?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <figure className="w-full flex flex-col gap-3">
+        <div
+          className="w-full rounded-2xl overflow-hidden border border-[#E6E3DD] cursor-zoom-in"
+          style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.07)" }}
+          onClick={() => setOpen(true)}
+          role="button"
+          aria-label="Expand image"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
+        >
+          <img
+            src={src}
+            alt={alt ?? caption}
+            className="w-full h-auto block"
+            loading="lazy"
+          />
+        </div>
+        <figcaption className="text-xs text-[#9C9A95] text-center leading-snug px-4">{caption}</figcaption>
+      </figure>
+
+      <AnimatePresence>
+        {open && (
+          <Lightbox
+            src={src}
+            alt={alt ?? caption}
+            caption={caption}
+            onClose={() => setOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+function CaseStudyVideo({ src, caption, poster }: { src: string; caption: string; poster?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <figure className="w-full flex flex-col gap-3">
+        <div
+          className="w-full rounded-2xl overflow-hidden border border-[#E6E3DD] cursor-zoom-in"
+          style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.07)" }}
+          onClick={() => setOpen(true)}
+          role="button"
+          aria-label="Expand video"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
+        >
+          <video
+            src={src}
+            poster={poster}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-auto block"
+          />
+        </div>
+        <figcaption className="text-xs text-[#9C9A95] text-center leading-snug px-4">{caption}</figcaption>
+      </figure>
+
+      <AnimatePresence>
+        {open && (
+          <Lightbox
+            type="video"
+            src={src}
+            caption={caption}
+            onClose={() => setOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 function ImagePlaceholder({ caption, tall }: { caption: string; tall?: boolean }) {
   return (
     <figure
@@ -470,6 +706,8 @@ function renderBlock(block: Block, i: number): React.ReactNode {
     case "decisions":        return <Decisions key={i} items={block.items} />;
     case "before-after":     return <BeforeAfter key={i} before={block.before} after={block.after} />;
     case "image-placeholder":return <ImagePlaceholder key={i} caption={block.caption} tall={block.tall} />;
+    case "case-study-image": return <CaseStudyImage key={i} src={block.src} caption={block.caption} alt={block.alt} />;
+    case "case-study-video": return <CaseStudyVideo key={i} src={block.src} caption={block.caption} poster={block.poster} />;
     default:                 return null;
   }
 }

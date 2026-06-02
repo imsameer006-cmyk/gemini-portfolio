@@ -72,8 +72,10 @@ export const geminiDigitalTwin: CaseStudyData = {
           },
         },
         {
-          type: "image-placeholder",
+          type: "case-study-image",
+          src: "/case-studies/gemini/challenge-poc.png",
           caption: "Existing interface (PoC) — Module customization before workflow integration",
+          alt: "Gemini existing interface showing the module customization PoC with annotated pain points",
         },
         {
           type: "callout",
@@ -100,8 +102,10 @@ export const geminiDigitalTwin: CaseStudyData = {
           ],
         },
         {
-          type: "image-placeholder",
+          type: "case-study-image",
+          src: "/case-studies/gemini/context-governance.png",
           caption: "Project-Level View of Module Governance — A single project with multiple modules, each moving through different approval stages with different role ownership",
+          alt: "Diagram showing Project Alpha containing three modules at different approval stages, each connected to siloed external tools",
         },
         {
           type: "callout",
@@ -199,9 +203,9 @@ export const geminiDigitalTwin: CaseStudyData = {
           text: "Each state mapped to a specific review stage and appeared directly in the module interface, helping users understand progress without relying on email or manual follow-ups.",
         },
         {
-          type: "image-placeholder",
-          caption: "Short Flow Lifecycle in Context — Expanded Short Flow view showing how approval stages were surfaced inside the module interface",
-          tall: true,
+          type: "case-study-video",
+          src: "/case-studies/gemini/solution-short-flow.mp4",
+          caption: "Expanded Short Flow view showing how approval stages were surfaced inside the module interface.",
         },
       ],
     },

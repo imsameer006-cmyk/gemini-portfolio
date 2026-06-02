@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gemini — Project-Level Module Governance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  width:100%;min-height:100%;
+  font-family:"Inter",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  background:#F9F8F5;
+}
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+  min-height:100vh;
+}
+
+.master{
+  width:1550px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  background:#F9F8F5;
+  border:1px solid #E6E3DD;
+  border-radius:16px;
+  padding:48px 40px 40px;
+}
+
+.content-row{
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  width:100%;
+}
+
+.left-space{ width:220px; flex-shrink:0; }
+.right-bal{ width:180px; flex-shrink:0; }
+
+.header-block{
+  padding-left:220px;
+  margin-bottom:20px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.s-label{
+  font-family:"Inter",system-ui,sans-serif;
+  font-size:12px;font-weight:500;
+  letter-spacing:1.2px;text-transform:uppercase;color:#8C8B84;
+}
+.ui-title{
+  font-family:"Instrument Serif",Georgia,serif;
+  font-size:22px;font-weight:400;font-style:italic;
+  color:#18171A;line-height:1.2;
+}
+
+.diagram-canvas{
+  width:1150px;height:660px;flex-shrink:0;
+  background:#ffffff;border:1px solid #d5dee2;border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 12px 40px rgba(10,20,35,.10),0 2px 8px rgba(10,20,35,.06);
+  position:relative;z-index:5;
+}
+
+.caption-wrap{
+  padding-left:220px;
+  width:calc(220px + 1150px);
+  margin-top:14px;
+}
+.caption{
+  width:1150px;text-align:center;
+  font-size:12px;font-weight:500;
+  color:rgba(24,23,26,0.45);line-height:1.5;letter-spacing:0.01em;
+}
+</style>
+</head>
+<body>
+<div class="master">
+
+  <div class="header-block">
+    <span class="s-label">Context</span>
+    <h2 class="ui-title">Project-Level View of Module Governance</h2>
+  </div>
+
+  <div class="content-row">
+    <div class="left-space"></div>
+
+    <div class="diagram-canvas">
+    <svg width="1150" height="660" viewBox="0 0 1150 660" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 2L8 5L2 8" fill="none" stroke="#C4CDD2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- ── PROJECT ALPHA CARD ── -->
+      <rect x="450" y="44" width="290" height="68" rx="12" fill="#fff" stroke="#E3EAED" stroke-width="1"/>
+      <rect x="472" y="60" width="32" height="32" rx="8" fill="#EAF6F3" stroke="#B2D9D2" stroke-width="1"/>
+      <g transform="translate(488,76)" fill="none" stroke="#4A6E68" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M0 -10L9 -5V5L0 10L-9 5V-5Z"/>
+        <line x1="0" y1="-10" x2="0" y2="10"/>
+        <line x1="-9" y1="-5" x2="9" y2="-5"/>
+      </g>
+      <text x="514" y="78" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#141e2b" letter-spacing="-0.016em">Project Alpha</text>
+      <text x="514" y="96" font-family="Inter,sans-serif" font-size="12" font-weight="400" fill="#7d8c9a">Contains multiple modules</text>
+
+      <!-- ── CONNECTOR TREE ── -->
+      <line x1="595" y1="112" x2="595" y2="148" stroke="#D5DEE2" stroke-width="1" marker-end="url(#arr)"/>
+      <line x1="197" y1="148" x2="993" y2="148" stroke="#D5DEE2" stroke-width="1"/>
+      <line x1="197" y1="148" x2="197" y2="172" stroke="#D5DEE2" stroke-width="1" marker-end="url(#arr)"/>
+      <line x1="595" y1="148" x2="595" y2="172" stroke="#D5DEE2" stroke-width="1" marker-end="url(#arr)"/>
+      <line x1="993" y1="148" x2="993" y2="172" stroke="#D5DEE2" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- ── MODULE A — Pre-check ── -->
+      <rect x="47" y="172" width="300" height="194" rx="12" fill="#fff" stroke="#E3EAED" stroke-width="1"/>
+      <rect x="63" y="188" width="28" height="28" rx="7" fill="#EAF0EF" stroke="#C2D4D1" stroke-width="1"/>
+      <g transform="translate(77,202)" fill="none" stroke="#4A6E68" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M0 -8L7 -4V4L0 8L-7 4V-4Z"/>
+        <line x1="0" y1="-8" x2="0" y2="8"/>
+        <line x1="-7" y1="-4" x2="7" y2="-4"/>
+      </g>
+      <text x="99" y="197" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#141e2b" letter-spacing="-0.014em">Module A</text>
+      <rect x="178" y="187" width="74" height="20" rx="10" fill="#EAF0EF"/>
+      <text x="215" y="201" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#2E4845" letter-spacing="0.01em">Pre-check</text>
+      <rect x="63" y="228" width="268" height="4" rx="2" fill="#E3EAED"/>
+      <rect x="63" y="228" width="89" height="4" rx="2" fill="#4A6E68"/>
+      <circle cx="63"  cy="230" r="6" fill="#4A6E68"/>
+      <circle cx="152" cy="230" r="6" fill="#4A6E68"/>
+      <circle cx="241" cy="230" r="6" fill="#E3EAED"/>
+      <circle cx="330" cy="230" r="6" fill="#E3EAED"/>
+      <line x1="63" y1="252" x2="331" y2="252" stroke="#E3EAED" stroke-width="0.75"/>
+      <text x="63" y="270" font-family="Inter,sans-serif" font-size="11" font-weight="500" fill="#7d8c9a" letter-spacing="0.01em">Assigned roles</text>
+      <circle cx="77"  cy="300" r="13" fill="#4A6E68"/>
+      <text x="77" y="304.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#EAF0EF">F</text>
+      <text x="96" y="296" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">FAE</text>
+      <text x="96" y="310" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Owner</text>
+      <circle cx="196" cy="300" r="13" fill="#5C6B52"/>
+      <text x="196" y="304.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#EBF0E7">P</text>
+      <text x="215" y="296" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">PAE</text>
+      <text x="215" y="310" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Reviewing</text>
+
+      <!-- ── MODULE B — Feasibility ── -->
+      <rect x="445" y="172" width="300" height="194" rx="12" fill="#fff" stroke="#E3EAED" stroke-width="1"/>
+      <rect x="461" y="188" width="28" height="28" rx="7" fill="#FFF7EC" stroke="#F0D9A8" stroke-width="1"/>
+      <g transform="translate(475,202)" fill="none" stroke="#BA7517" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M0 -8L7 -4V4L0 8L-7 4V-4Z"/>
+        <line x1="0" y1="-8" x2="0" y2="8"/>
+        <line x1="-7" y1="-4" x2="7" y2="-4"/>
+      </g>
+      <text x="497" y="197" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#141e2b" letter-spacing="-0.014em">Module B</text>
+      <rect x="571" y="187" width="76" height="20" rx="10" fill="#FFF7EC"/>
+      <text x="609" y="201" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#7A4D0E" letter-spacing="0.01em">Feasibility</text>
+      <rect x="461" y="228" width="268" height="4" rx="2" fill="#E3EAED"/>
+      <rect x="461" y="228" width="89" height="4" rx="2" fill="#BA7517"/>
+      <circle cx="461" cy="230" r="6" fill="#BA7517"/>
+      <circle cx="550" cy="230" r="6" fill="#BA7517"/>
+      <circle cx="639" cy="230" r="6" fill="#E3EAED"/>
+      <circle cx="728" cy="230" r="6" fill="#E3EAED"/>
+      <line x1="461" y1="252" x2="729" y2="252" stroke="#E3EAED" stroke-width="0.75"/>
+      <text x="461" y="270" font-family="Inter,sans-serif" font-size="11" font-weight="500" fill="#7d8c9a" letter-spacing="0.01em">Assigned roles</text>
+      <circle cx="475" cy="300" r="13" fill="#5C6B52"/>
+      <text x="475" y="304.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#EBF0E7">P</text>
+      <text x="494" y="296" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">PAE</text>
+      <text x="494" y="310" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Reviewing</text>
+      <circle cx="600" cy="300" r="13" fill="#BA7517"/>
+      <text x="600" y="304.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#FFF7EC">G</text>
+      <text x="619" y="296" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">PMG</text>
+      <text x="619" y="310" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Reviewing</text>
+
+      <!-- ── MODULE C — RS Creation ── -->
+      <rect x="843" y="172" width="300" height="194" rx="12" fill="#fff" stroke="#E3EAED" stroke-width="1"/>
+      <rect x="859" y="188" width="28" height="28" rx="7" fill="#F0EBE6" stroke="#D9CEC6" stroke-width="1"/>
+      <g transform="translate(873,202)" fill="none" stroke="#6B5B4E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M0 -8L7 -4V4L0 8L-7 4V-4Z"/>
+        <line x1="0" y1="-8" x2="0" y2="8"/>
+        <line x1="-7" y1="-4" x2="7" y2="-4"/>
+      </g>
+      <text x="895" y="197" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#141e2b" letter-spacing="-0.014em">Module C</text>
+      <rect x="965" y="187" width="82" height="20" rx="10" fill="#F0EBE6"/>
+      <text x="1006" y="201" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#3D3028" letter-spacing="0.01em">RS Creation</text>
+      <rect x="859" y="228" width="268" height="4" rx="2" fill="#E3EAED"/>
+      <rect x="859" y="228" width="89" height="4" rx="2" fill="#6B5B4E"/>
+      <circle cx="859"  cy="230" r="6" fill="#6B5B4E"/>
+      <circle cx="948" cy="230" r="6" fill="#6B5B4E"/>
+      <circle cx="1037" cy="230" r="6" fill="#E3EAED"/>
+      <circle cx="1126" cy="230" r="6" fill="#E3EAED"/>
+      <line x1="859" y1="252" x2="1127" y2="252" stroke="#E3EAED" stroke-width="0.75"/>
+      <text x="859" y="270" font-family="Inter,sans-serif" font-size="11" font-weight="500" fill="#7d8c9a" letter-spacing="0.01em">Assigned roles</text>
+      <circle cx="873" cy="300" r="13" fill="#6B5B4E"/>
+      <text x="873" y="304.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#F0EBE6">J</text>
+      <text x="892" y="296" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">PJM</text>
+      <text x="892" y="310" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Owner</text>
+
+      <!-- ── DASHED DROPS — modules escape to external tools (no horizontal links between tools) ── -->
+      <line x1="197" y1="366" x2="197" y2="410" stroke="#D5DEE2" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+      <line x1="595" y1="366" x2="595" y2="410" stroke="#D5DEE2" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+      <line x1="993" y1="366" x2="993" y2="410" stroke="#D5DEE2" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+      <!-- ── TOOL CARDS — siloed, no connections between them ── -->
+
+      <!-- Excel -->
+      <rect x="47" y="410" width="300" height="88" rx="12" fill="#fff" stroke="#E3EAED" stroke-width="1"/>
+      <rect x="67" y="430" width="32" height="32" rx="7" fill="#1D6F42"/>
+      <text x="83" y="451" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#fff">X</text>
+      <text x="111" y="444" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#141e2b" letter-spacing="-0.014em">Excel sheets</text>
+      <text x="111" y="460" font-family="Inter,sans-serif" font-size="11.5" font-weight="400" fill="#7d8c9a">Requirements &amp; data</text>
+      <text x="111" y="475" font-family="Inter,sans-serif" font-size="11.5" font-weight="400" fill="#7d8c9a">Multiple versions</text>
+
+      <!-- Email -->
+      <rect x="445" y="410" width="300" height="88" rx="12" fill="#fff" stroke="#E3EAED" stroke-width="1"/>
+      <rect x="465" y="429" width="32" height="24" rx="5" fill="none" stroke="#9aacb5" stroke-width="1.5"/>
+      <polyline points="465,429 481,445 497,429" fill="none" stroke="#9aacb5" stroke-width="1.5" stroke-linejoin="round"/>
+      <text x="511" y="444" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#141e2b" letter-spacing="-0.014em">Email approvals</text>
+      <text x="511" y="460" font-family="Inter,sans-serif" font-size="11.5" font-weight="400" fill="#7d8c9a">Approvals &amp; updates</text>
+      <text x="511" y="475" font-family="Inter,sans-serif" font-size="11.5" font-weight="500" fill="#C07B50">Threads hard to track</text>
+
+      <!-- CAD/PLM -->
+      <rect x="843" y="410" width="300" height="88" rx="12" fill="#fff" stroke="#E3EAED" stroke-width="1"/>
+      <g transform="translate(875,453)" fill="none" stroke="#9aacb5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M0 -14L12 -7V7L0 14L-12 7V-7Z"/>
+        <line x1="0" y1="-14" x2="0" y2="14"/>
+        <line x1="-12" y1="-7" x2="12" y2="-7"/>
+      </g>
+      <text x="907" y="444" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#141e2b" letter-spacing="-0.014em">External CAD / PLM</text>
+      <text x="907" y="460" font-family="Inter,sans-serif" font-size="11.5" font-weight="400" fill="#7d8c9a">Design files &amp; integration</text>
+      <text x="907" y="475" font-family="Inter,sans-serif" font-size="11.5" font-weight="500" fill="#C07B50">No visibility outside platform</text>
+
+      <!-- ── ROLES LEGEND ── -->
+      <rect x="47" y="528" width="1096" height="96" rx="12" fill="#F6F5F2" stroke="#E3EAED" stroke-width="1"/>
+      <text x="75" y="553" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#7d8c9a" letter-spacing="0.09em">ROLES INVOLVED</text>
+
+      <circle cx="95"  cy="590" r="15" fill="#4A6E68"/>
+      <text x="95" y="594.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#EAF0EF">F</text>
+      <text x="117" y="585" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">FAE</text>
+      <text x="117" y="600" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Captures requirements</text>
+
+      <circle cx="355" cy="590" r="15" fill="#5C6B52"/>
+      <text x="355" y="594.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#EBF0E7">P</text>
+      <text x="377" y="585" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">PAE</text>
+      <text x="377" y="600" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Technical feasibility</text>
+
+      <circle cx="615" cy="590" r="15" fill="#BA7517"/>
+      <text x="615" y="594.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#FFF7EC">G</text>
+      <text x="637" y="585" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">PMG</text>
+      <text x="637" y="600" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Commercial evaluation</text>
+
+      <circle cx="875" cy="590" r="15" fill="#6B5B4E"/>
+      <text x="875" y="594.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#F0EBE6">J</text>
+      <text x="897" y="585" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#141e2b" letter-spacing="-0.012em">PJM</text>
+      <text x="897" y="600" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#7d8c9a">Design spec &amp; integration</text>
+
+    </svg>
+    </div>
+
+    <div class="right-bal"></div>
+  </div>
+
+  <div class="caption-wrap">
+    <p class="caption">A single project contained multiple modules, each moving through different approval stages with different role ownership.</p>
+  </div>
+
+</div>
+</body>
+</html>

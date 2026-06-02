@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gemini — [SCREEN TITLE]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+/*
+  ═══════════════════════════════════════════════════════════════
+  UI DEMONSTRATION FRAME — TEMPLATE
+  ═══════════════════════════════════════════════════════════════
+
+  LAYOUT SYSTEM
+  ─────────────
+  Master frame: 1550px wide
+    ├── Annotation column (.anns):  220px
+    ├── UI shell (.shell):         1150px  ← never change this
+    └── Right balance (.right-bal): 180px
+  Total: 220 + 1150 + 180 = 1550px
+
+  Header / caption left-aligned to UI left edge:
+    padding-left: 220px (annotation column width)
+
+  ANNOTATION SYSTEM
+  ─────────────────
+  SVG-based. All connectors, spine, and nodes live inside .ann-svg.
+  Text blocks (.ann) are absolutely positioned on top (z-index:2).
+
+  Spine: vertical line at x=210, full height, fades top & bottom
+  L-connectors:
+    - Horizontal:  x=160 (text right edge) → x=210 (spine)
+    - Vertical:    travels along spine from text-midpoint y → node y
+    - Can go DOWN (text above node) or UP (text below node)
+  Nodes: circle r=4 (fill) + r=7 (glow, opacity 0.15) at target y
+
+  UI ELEMENT Y-POSITIONS (from shell top, for reference)
+  ───────────────────────────────────────────────────────
+  Topbar:                    0  – 52px
+  Sidebar header (.ph):     52  – 100px
+  Nav rows (×n at 50px ea): 106px + (n × 50px)
+  Empty zone below nav:     [last nav bottom] – [660 - 40 - 118]px
+  sb-bot (attach area):     [660 - 40 - 118] – [660 - 40]px
+  Footer:                   [660 - 40] – 660px
+
+  SCREENSHOT GUIDE
+  ────────────────
+  - Open in browser at 1:1 zoom (100%)
+  - Wait for all assets / 3D / animations to load
+  - DevTools → Capture full size screenshot
+  - Save to: public/screens/[section]-[descriptor].png
+  - Wire into case study data as annotated-image block
+
+  VIDEO GUIDE (use only for screens with meaningful interaction)
+  ──────────────────────────────────────────────────────────────
+  - Loop duration: 3–6 seconds
+  - No audio
+  - Autoplay, muted, loop attributes on <video>
+  - Save to: public/screens/[section]-[descriptor].mp4
+  - Wire into case study data as video-loop block
+
+  DECISIONS LOCKED (do not revisit)
+  ──────────────────────────────────
+  - Shell shadow: 0 12px 40px rgba(10,20,35,.10), 0 2px 8px rgba(10,20,35,.06)
+  - Shell size: 1150×660px fixed
+  - Node 1 (Short Flow row): y=325 (6px visual offset is imperceptible at screenshot scale)
+  - Nodes 2+3 proximity in empty zone: intentional — two missing features, one absent space
+  - Annotation text in lower half: reflects where the problems actually live in the UI
+  ═══════════════════════════════════════════════════════════════
+*/
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  width:100%;min-height:100%;
+  font-family:"Inter",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  background:#F9F8F5;
+}
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+  min-height:100vh;
+}
+
+/* ── MASTER FRAME ── */
+.master{
+  width:1550px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  background:#F9F8F5;
+  border:1px solid #E6E3DD;
+  border-radius:16px;
+  padding:48px 40px 40px;
+}
+
+/* ── HEADER — aligns to UI left edge (220px) ── */
+.header-block{
+  padding-left:220px;
+  margin-bottom:20px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.caption-wrap{
+  padding-left:220px;
+  width:calc(220px + 1150px);
+  margin-top:14px;
+}
+.s-label{
+  font-family:"Inter",system-ui,sans-serif;
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:#8C8B84;
+}
+.ui-title{
+  font-family:"Instrument Serif",Georgia,serif;
+  font-size:22px;
+  font-weight:400;
+  font-style:italic;
+  color:#18171A;
+  line-height:1.2;
+}
+
+/* ── CONTENT ROW ── */
+.content-row{
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  gap:0;
+  width:100%;
+  position:relative;
+}
+
+/* ── ANNOTATION COLUMN ── */
+.anns{
+  width:220px;
+  flex-shrink:0;
+  height:660px;  /* must match shell height */
+  position:relative;
+}
+
+.ann-svg{
+  position:absolute;
+  top:0;left:0;
+  width:220px;
+  height:660px;
+  pointer-events:none;
+  z-index:1;
+  overflow:visible;
+}
+
+/* Text blocks sit above SVG */
+.ann{
+  position:absolute;
+  width:155px;
+  left:0;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  z-index:2;
+}
+.ann-t{
+  font-size:12.5px;
+  font-weight:600;
+  color:#18171A;
+  line-height:1.3;
+  letter-spacing:-0.01em;
+}
+.ann-d{
+  font-size:11.5px;
+  font-weight:400;
+  color:rgba(24,23,26,0.5);
+  line-height:1.5;
+}
+
+.gap{display:none;}
+
+/* ── UI SHELL — 1150×660 FIXED ── */
+.shell{
+  width:1150px;
+  height:660px;
+  flex-shrink:0;
+  background:#ffffff;
+  border:1px solid #d5dee2;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 12px 40px rgba(10,20,35,.10),0 2px 8px rgba(10,20,35,.06);
+  color:#141e2b;
+  position:relative;
+  z-index:5;
+  /* Adjust grid-template-rows / columns per screen layout */
+}
+
+.right-bal{width:180px;flex-shrink:0;}
+
+.caption{
+  width:1150px;
+  text-align:center;
+  font-size:12px;
+  font-weight:500;
+  color:rgba(24,23,26,0.45);
+  line-height:1.5;
+  letter-spacing:0.01em;
+}
+
+/* ── SHARED UI TOKENS ── */
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #e3eaed;background:rgba(255,255,255,.98);}
+.tb-l{display:flex;align-items:center;}
+.brand{display:flex;align-items:center;gap:7px;padding-right:16px;border-right:1px solid #e3eaed;margin-right:14px;}
+.b-icon{width:24px;height:24px;border-radius:7px;background:linear-gradient(145deg,#e0f2ef,#c8e8e2);border:1px solid #b2d9d2;display:grid;place-items:center;color:#007a6b;}
+.b-name{font-size:13px;font-weight:700;color:#141e2b;letter-spacing:-.02em;}
+.bc{display:flex;align-items:center;gap:6px;font-size:12px;color:#7d8c9a;}
+.bc a{color:#4a5665;font-weight:600;text-decoration:none;}
+.bc-sep{color:#d5dee2;font-weight:700;}
+.bc-cur{color:#141e2b;font-weight:700;}
+.bc-ts{color:#7d8c9a;font-size:11px;margin-left:8px;padding-left:10px;border-left:1px solid #e3eaed;}
+.tb-r{display:flex;align-items:center;gap:6px;}
+.ibt{width:30px;height:30px;padding:0;border:0;border-radius:8px;background:transparent;color:#4a5665;display:grid;place-items:center;cursor:pointer;transition:background 150ms,color 150ms;}
+.ibt:hover{background:#f5f7f8;color:#007a6b;}
+.av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#006558,#2b9080);display:grid;place-items:center;color:#fff;font-size:10.5px;font-weight:700;margin-left:2px;}
+
+/* Sidebar */
+.sb{border-right:1px solid #e3eaed;background:#fff;min-height:0;}
+.ph{display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid #e3eaed;height:48px;}
+.ph-t{font-size:12.5px;font-weight:700;color:#141e2b;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hl{display:flex;align-items:center;gap:6px;color:#7d8c9a;font-size:11px;font-weight:600;white-space:nowrap;}
+.chk{width:14px;height:14px;border:1.2px solid #a8b4bc;border-radius:4px;background:#fff;flex-shrink:0;}
+.col-btn{width:28px;height:28px;border:1px solid #e3eaed;border-radius:8px;background:#fff;color:#4a5665;display:grid;place-items:center;cursor:pointer;box-shadow:0 1px 2px rgba(10,20,35,.06);}
+
+/* Nav rows */
+.navlist{padding:6px 18px 0;overflow:hidden;}
+.nr{height:50px;display:grid;grid-template-columns:20px 1fr auto 22px;align-items:center;gap:11px;border-bottom:1px solid #e3eaed;cursor:pointer;position:relative;transition:background 150ms;}
+.nr::before{content:"";position:absolute;left:-18px;top:0;bottom:0;width:3px;background:#007a6b;border-radius:0 3px 3px 0;opacity:0;transition:opacity 150ms;}
+.nr:hover{background:linear-gradient(90deg,rgba(0,122,107,.04),transparent 80%);}
+.nr:hover::before{opacity:1;}
+.ni{display:grid;place-items:center;color:#007a6b;opacity:.86;}
+.nl{font-size:13px;font-weight:600;color:#141e2b;letter-spacing:-.012em;}
+.nc{font-size:11.5px;color:#7d8c9a;font-weight:600;}
+.np{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;color:#007a6b;font-size:16px;font-weight:400;line-height:1;}
+/* Active nav row variant */
+.nr-active{background:linear-gradient(90deg,rgba(0,122,107,.04),transparent 72%);}
+.nr-active::before{opacity:.75 !important;}
+.nr-active .nl{color:#007a6b;font-weight:700;}
+.nr-active .ni{opacity:1 !important;}
+
+/* Sidebar bottom */
+.sb-bot{padding:16px 18px 14px;background:linear-gradient(180deg,rgba(250,251,252,0) 0%,#fafbfc 100%),#fff;display:flex;flex-direction:column;gap:14px;}
+.att{width:100%;height:38px;border:0;border-radius:8px;background:linear-gradient(180deg,#0d8879,#00736a);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:700;box-shadow:0 7px 16px rgba(0,122,107,.20);cursor:pointer;font-family:inherit;}
+.met{display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:8px;}
+.met-l{font-size:12.5px;font-weight:700;color:#141e2b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.met-v{font-size:12.5px;font-weight:700;color:#1e9268;}
+.badge{height:24px;padding:0 9px;border-radius:7px;background:#e7f6ef;color:#1e9268;font-size:11px;font-weight:700;display:grid;place-items:center;}
+
+/* Workspace toolbar */
+.wtb{display:flex;align-items:center;padding:0 20px;border-bottom:1px solid #e3eaed;background:rgba(255,255,255,.98);height:48px;}
+.wtb-l{display:flex;align-items:center;gap:4px;padding-right:16px;border-right:1px solid #e3eaed;margin-right:18px;}
+.wtb-m{display:flex;align-items:center;gap:14px;flex:1;}
+.tsep{width:1px;height:20px;background:#e3eaed;margin:0 2px;}
+.wtb-r{display:flex;align-items:center;gap:8px;padding-left:16px;border-left:1px solid #e3eaed;margin-left:auto;}
+.msel,.lid,.zoom{min-height:30px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#141e2b;padding:5px 10px;border-radius:8px;cursor:pointer;}
+.lid-chk{width:16px;height:16px;border-radius:5px;background:#007a6b;display:grid;place-items:center;color:#fff;flex-shrink:0;}
+.vtog{display:flex;align-items:center;padding:3px;border:1px solid #d4dde2;border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(10,20,35,.06);height:32px;}
+.vopt{height:24px;min-width:44px;padding:0 10px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:11.5px;font-weight:700;color:#7a8997;cursor:pointer;}
+.vopt.on{background:#e8f5f2;color:#007a6b;box-shadow:inset 0 0 0 1px rgba(0,122,107,.14);}
+
+/* Workspace scene */
+.scene{position:relative;overflow:hidden;min-height:0;background:linear-gradient(rgba(150,170,176,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(150,170,176,.16) 1px,transparent 1px),#f8fafa;background-size:36px 36px,36px 36px;}
+
+/* Footer */
+.footer{display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-top:1px solid #e3eaed;background:#fff;height:40px;}
+.foot-l{font-size:11px;color:#7a8997;}
+.foot-r{display:flex;align-items:center;gap:24px;font-size:11px;color:#7a8997;}
+.foot-r span{cursor:pointer;}
+
+/* Status badges */
+.status{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:6px;font-size:11px;font-weight:600;}
+.status-draft    {background:#F2F0EB;color:#6A6764;}
+.status-precheck {background:#EEF4FF;color:#3B5FC0;}
+.status-review   {background:#FFF4E5;color:#B06A00;}
+.status-approved {background:#E7F6EF;color:#1E9268;}
+.status-rejected {background:#FDECEA;color:#B85A48;}
+</style>
+</head>
+<body>
+<div class="master">
+
+  <!-- HEADER BLOCK — section label + screen title -->
+  <div class="header-block">
+    <span class="s-label">[SECTION LABEL]</span><!-- e.g. Challenge / Solution / Architecture -->
+    <h2 class="ui-title">[Screen Title]</h2>
+  </div>
+
+  <!-- CONTENT ROW -->
+  <div class="content-row">
+
+    <!-- ═══════════════════════════════════════════════════
+         ANNOTATION COLUMN
+         Replace the SVG contents and .ann divs per screen.
+         Keep the spine gradient and coordinate system.
+         ═══════════════════════════════════════════════════ -->
+    <div class="anns">
+
+      <svg class="ann-svg" viewBox="0 0 220 660" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="spineGrad" x1="0" y1="0" x2="0" y2="660" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#D4C9BE" stop-opacity="0"/>
+            <stop offset="8%"   stop-color="#D4C9BE" stop-opacity="0.8"/>
+            <stop offset="92%"  stop-color="#D4C9BE" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#D4C9BE" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Spine -->
+        <line x1="210" y1="0" x2="210" y2="660" stroke="url(#spineGrad)" stroke-width="1"/>
+
+        <!-- ── ANNOTATION 1 ──
+             Horizontal: x=160→210 at y=[text midpoint]
+             Vertical:   y=[text midpoint]→[node y] along spine
+             Node:       circle at (210, [node y]) ── -->
+        <line x1="160" y1="[TEXT_MID_Y]" x2="210" y2="[TEXT_MID_Y]" stroke="#C07B50" stroke-width="1" stroke-opacity="0.5"/>
+        <line x1="210" y1="[TEXT_MID_Y]" x2="210" y2="[NODE_Y]"     stroke="#C07B50" stroke-width="1" stroke-opacity="0.5"/>
+        <circle cx="210" cy="[NODE_Y]" r="4" fill="#C07B50"/>
+        <circle cx="210" cy="[NODE_Y]" r="7" fill="#C07B50" fill-opacity="0.15"/>
+
+        <!-- ── ANNOTATION 2 ── -->
+        <line x1="160" y1="[TEXT_MID_Y]" x2="210" y2="[TEXT_MID_Y]" stroke="#C07B50" stroke-width="1" stroke-opacity="0.5"/>
+        <line x1="210" y1="[TEXT_MID_Y]" x2="210" y2="[NODE_Y]"     stroke="#C07B50" stroke-width="1" stroke-opacity="0.5"/>
+        <circle cx="210" cy="[NODE_Y]" r="4" fill="#C07B50"/>
+        <circle cx="210" cy="[NODE_Y]" r="7" fill="#C07B50" fill-opacity="0.15"/>
+
+        <!-- ── ANNOTATION 3 ── -->
+        <line x1="160" y1="[TEXT_MID_Y]" x2="210" y2="[TEXT_MID_Y]" stroke="#C07B50" stroke-width="1" stroke-opacity="0.5"/>
+        <line x1="210" y1="[TEXT_MID_Y]" x2="210" y2="[NODE_Y]"     stroke="#C07B50" stroke-width="1" stroke-opacity="0.5"/>
+        <circle cx="210" cy="[NODE_Y]" r="4" fill="#C07B50"/>
+        <circle cx="210" cy="[NODE_Y]" r="7" fill="#C07B50" fill-opacity="0.15"/>
+      </svg>
+
+      <!-- Text blocks: top = [NODE_Y - ~14px] so title midpoint aligns with TEXT_MID_Y -->
+      <div class="ann" style="top:[Y]px;">
+        <div class="ann-t">[Annotation title]</div>
+        <div class="ann-d">[Annotation detail sentence.]</div>
+      </div>
+
+      <div class="ann" style="top:[Y]px;">
+        <div class="ann-t">[Annotation title]</div>
+        <div class="ann-d">[Annotation detail sentence.]</div>
+      </div>
+
+      <div class="ann" style="top:[Y]px;">
+        <div class="ann-t">[Annotation title]</div>
+        <div class="ann-d">[Annotation detail sentence.]</div>
+      </div>
+
+    </div>
+
+    <div class="gap"></div>
+
+    <!-- ═══════════════════════════════════════════════════
+         UI SHELL — place screen-specific content here
+         Keep: width, height, border-radius, shadow, z-index
+         Adjust: grid-template-rows/columns per layout
+         ═══════════════════════════════════════════════════ -->
+    <div class="shell" style="display:grid;grid-template-rows:52px 1fr 40px;">
+
+      <!-- Topbar (shared across all Gemini screens) -->
+      <header class="topbar">
+        <div class="tb-l">
+          <div class="brand">
+            <div class="b-icon"><i data-lucide="box" style="width:14px;height:14px;stroke-width:2"></i></div>
+            <span class="b-name">Gemini</span>
+          </div>
+          <div class="bc">
+            <a href="#">Home</a>
+            <span class="bc-sep">/</span>
+            <span class="bc-cur">[breadcrumb]</span>
+            <span class="bc-ts">Last Edited [date]</span>
+          </div>
+        </div>
+        <div class="tb-r">
+          <button class="ibt"><i data-lucide="message-square" style="width:15px;height:15px;stroke-width:1.8"></i></button>
+          <button class="ibt"><i data-lucide="download"       style="width:15px;height:15px;stroke-width:1.8"></i></button>
+          <button class="ibt"><i data-lucide="link"           style="width:15px;height:15px;stroke-width:1.8"></i></button>
+          <button class="ibt"><i data-lucide="scan"           style="width:15px;height:15px;stroke-width:1.8"></i></button>
+          <div class="av">GA</div>
+        </div>
+      </header>
+
+      <!-- ── MAIN CONTENT — replace with screen-specific layout ── -->
+      <div style="display:grid;place-items:center;color:#8C8B84;font-size:13px;">
+        [Screen content goes here]
+      </div>
+
+      <!-- Footer (shared) -->
+      <footer class="footer">
+        <div class="foot-l">© 2022–2026 Infineon Technologies</div>
+        <div class="foot-r"><span>Privacy Policy</span><span>Version 0.633.0</span></div>
+      </footer>
+
+    </div>
+
+    <div class="right-bal"></div>
+
+  </div>
+
+  <!-- Caption -->
+  <div class="caption-wrap">
+    <p class="caption">[One-line caption describing what this screen shows.]</p>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
