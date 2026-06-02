@@ -637,6 +637,21 @@ function CaseStudyImage({ src, caption, alt }: { src: string; caption: string; a
 
 function CaseStudyVideo({ src, caption, poster }: { src: string; caption: string; poster?: string }) {
   const [open, setOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // autoPlay is blocked when the element starts hidden (Framer Motion opacity:0).
+  // IntersectionObserver fires play() imperatively once the video is actually visible.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) video.play().catch(() => {}); },
+      { threshold: 0.1 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <figure className="w-full flex flex-col gap-3">
@@ -650,6 +665,7 @@ function CaseStudyVideo({ src, caption, poster }: { src: string; caption: string
           onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
         >
           <video
+            ref={videoRef}
             src={src}
             poster={poster}
             autoPlay

@@ -252,6 +252,11 @@ export const geminiDigitalTwin: CaseStudyData = {
           ],
         },
         {
+          type: "case-study-video",
+          src: "/case-studies/gemini/self-assignment.mp4",
+          caption: "Self-assignment made ownership explicit before review actions became available.",
+        },
+        {
           type: "callout",
           text: "Together, these decisions turned Short Flow into an actionable workflow layer — making state, ownership, editability, and rejection feedback visible inside the module interface.",
         },
