@@ -114,26 +114,31 @@ export default function JumpToNav() {
     return () => obs.disconnect();
   }, []);
 
-  // ── Active section via Intersection Observer ─────────────────
+  // ── Active section via scroll position ───────────────────────
+  // Finds the last section whose top edge is at or above 96px
+  // (just below the 64px fixed header + 32px buffer). Because
+  // sections are ordered top-to-bottom we can loop and keep
+  // overwriting — the final match is the one "in view".
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
+    const OFFSET = 96;
 
-    SECTIONS.forEach(({ label }) => {
-      const el = document.getElementById(toSectionId(label));
-      if (!el) return;
+    const update = () => {
+      let next = toSectionId("Overview");
+      for (const { label } of SECTIONS) {
+        const el = document.getElementById(toSectionId(label));
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= OFFSET) {
+          next = toSectionId(label);
+        } else {
+          break;
+        }
+      }
+      setActiveId(next);
+    };
 
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActiveId(toSectionId(label));
-        },
-        { rootMargin: "-15% 0px -65% 0px", threshold: 0 }
-      );
-
-      obs.observe(el);
-      observers.push(obs);
-    });
-
-    return () => observers.forEach((o) => o.disconnect());
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
   // ── Close drawer on outside click ───────────────────────────

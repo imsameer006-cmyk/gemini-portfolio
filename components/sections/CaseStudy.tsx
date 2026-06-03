@@ -674,6 +674,7 @@ function CaseStudyVideo({ src, caption, poster }: { src: string; caption: string
             loop
             muted
             playsInline
+            preload="auto"
             className="w-full h-auto block"
           />
         </div>
